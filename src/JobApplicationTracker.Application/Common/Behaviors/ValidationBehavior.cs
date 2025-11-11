@@ -23,13 +23,14 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
     {
         if (!_validators.Any())
         {
-            return await next();
+            return await next().ConfigureAwait(false);
         }
 
-        var validationTasks = _validators.Select(validator =>
-            validator.ValidateAsync(request, cancellationToken));
+        var validationTasks = _validators
+            .Select(validator => validator.ValidateAsync(request, cancellationToken))
+            .ToArray();
 
-        var results = await Task.WhenAll(validationTasks);
+        var results = await Task.WhenAll(validationTasks).ConfigureAwait(false);
         var failures = results
             .SelectMany(result => result.Errors)
             .Where(failure => failure is not null)
@@ -40,7 +41,7 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
             throw new ValidationException(failures);
         }
 
-        return await next();
+        return await next().ConfigureAwait(false);
     }
 }
 

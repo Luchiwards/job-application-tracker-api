@@ -12,15 +12,8 @@ public sealed class PaginatedList<T>
         int page,
         int pageSize)
     {
-        if (page <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(page));
-        }
-
-        if (pageSize <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(pageSize));
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(page, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(pageSize, 0);
 
         Items = items;
         TotalCount = totalCount;
@@ -42,13 +35,24 @@ public sealed class PaginatedList<T>
 
     public bool HasNextPage => Page < TotalPages;
 
-    public static PaginatedList<T> Empty(int page, int pageSize) =>
-        new(Array.Empty<T>(), 0, page, pageSize);
-
-    public PaginatedList<TResult> Map<TResult>(Func<T, TResult> converter)
+    public PaginatedList<TResult> Map<TResult>(Func<T, TResult> selector)
     {
-        var mapped = Items.Select(converter).ToList();
+        var mapped = Items.Select(selector).ToList();
         return new PaginatedList<TResult>(mapped, TotalCount, Page, PageSize);
+    }
+}
+
+public static class PaginatedList
+{
+    public static PaginatedList<TResult> Create<TSource, TResult>(
+        IReadOnlyList<TSource> items,
+        int totalCount,
+        int page,
+        int pageSize,
+        Func<TSource, TResult> selector)
+    {
+        var mapped = items.Select(selector).ToList();
+        return new PaginatedList<TResult>(mapped, totalCount, page, pageSize);
     }
 }
 

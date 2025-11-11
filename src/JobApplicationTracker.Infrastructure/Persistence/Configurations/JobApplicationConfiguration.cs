@@ -1,6 +1,7 @@
 using System;
 using JobApplicationTracker.Domain.Entities;
 using JobApplicationTracker.Domain.Enums;
+using JobApplicationTracker.Infrastructure.Persistence.Converters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,9 +29,7 @@ public sealed class JobApplicationConfiguration : IEntityTypeConfiguration<JobAp
             .HasDefaultValue(ApplicationStatus.Applied);
 
         builder.Property(application => application.DateApplied)
-            .HasConversion(
-                date => date.ToDateTime(TimeOnly.MinValue),
-                value => DateOnly.FromDateTime(value))
+            .HasConversion(DateTimeConverters.DateOnlyToDateTime)
             .HasColumnType("TEXT")
             .IsRequired();
 
@@ -38,9 +37,7 @@ public sealed class JobApplicationConfiguration : IEntityTypeConfiguration<JobAp
             .HasMaxLength(2000);
 
         builder.Property(application => application.LastUpdatedOn)
-            .HasConversion(
-                date => date,
-                value => value.ToUniversalTime())
+            .HasConversion(DateTimeConverters.UtcDateTimeOffset)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.HasIndex(application => new { application.CompanyName, application.Position });

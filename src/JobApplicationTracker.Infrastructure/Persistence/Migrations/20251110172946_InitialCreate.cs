@@ -8,6 +8,8 @@ namespace JobApplicationTracker.Infrastructure.Persistence.Migrations
     /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
+        private static readonly string[] CompanyNamePositionIndexColumns = { "CompanyName", "Position" };
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -31,7 +33,7 @@ namespace JobApplicationTracker.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_JobApplications_CompanyName_Position",
                 table: "JobApplications",
-                columns: new[] { "CompanyName", "Position" });
+                columns: CompanyNamePositionIndexColumns);
         }
 
         /// <inheritdoc />

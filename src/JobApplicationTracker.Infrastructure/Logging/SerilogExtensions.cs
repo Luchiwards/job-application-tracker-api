@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -15,7 +16,7 @@ public static class SerilogExtensions
                 .ReadFrom.Services(services)
                 .Enrich.FromLogContext()
                 .Enrich.WithProperty("Application", "JobApplicationTracker")
-                .WriteTo.Console();
+                .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture);
         });
     }
 }

@@ -51,18 +51,18 @@ public sealed class JobApplication : Entity
             notes?.Trim());
     }
 
-    public void UpdateDetails(string companyName, string position, DateOnly dateApplied, string? notes)
+    public void Update(
+        string companyName,
+        string position,
+        ApplicationStatus status,
+        DateOnly dateApplied,
+        string? notes)
     {
         CompanyName = Guard.AgainstNullOrWhiteSpace(companyName, nameof(companyName));
         Position = Guard.AgainstNullOrWhiteSpace(position, nameof(position));
+        Status = status;
         DateApplied = dateApplied;
         Notes = notes?.Trim();
-        Touch();
-    }
-
-    public void UpdateStatus(ApplicationStatus status)
-    {
-        Status = status;
         Touch();
     }
 

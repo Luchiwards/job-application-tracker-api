@@ -1,10 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using JobApplicationTracker.Application.Common.Interfaces.Repositories;
+using JobApplicationTracker.Application.Features.JobApplications.Abstractions;
+using JobApplicationTracker.Infrastructure.Features.JobApplications;
 using JobApplicationTracker.Infrastructure.Options;
 using JobApplicationTracker.Infrastructure.Persistence;
-using JobApplicationTracker.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,9 +12,9 @@ using Microsoft.Extensions.Options;
 
 namespace JobApplicationTracker.Infrastructure;
 
-public static class DependencyInjection
+public static class InfrastructureServiceRegistration
 {
-    public static IServiceCollection AddInfrastructure(
+    public static IServiceCollection AddInfrastructureServices(
         this IServiceCollection services,
         IConfiguration configuration)
     {
