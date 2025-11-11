@@ -67,7 +67,7 @@ namespace JobApplicationTracker.Infrastructure.Migrations
                             LastUpdatedOn = new DateTimeOffset(new DateTime(2025, 1, 15, 8, 30, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Notes = "Initial phone screen complete.",
                             Position = "Backend Engineer",
-                            Status = "Interviewing"
+                            Status = "Shortlisted"
                         },
                         new
                         {
@@ -77,7 +77,7 @@ namespace JobApplicationTracker.Infrastructure.Migrations
                             LastUpdatedOn = new DateTimeOffset(new DateTime(2025, 2, 11, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Notes = "Waiting for recruiter feedback.",
                             Position = "Full Stack Developer",
-                            Status = "Applied"
+                            Status = "InProcess"
                         },
                         new
                         {
@@ -87,7 +87,7 @@ namespace JobApplicationTracker.Infrastructure.Migrations
                             LastUpdatedOn = new DateTimeOffset(new DateTime(2025, 1, 2, 14, 15, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Notes = "Offer expires next week.",
                             Position = "Site Reliability Engineer",
-                            Status = "Offered"
+                            Status = "Offer"
                         });
                 });
 #pragma warning restore 612, 618
