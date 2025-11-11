@@ -34,6 +34,22 @@ dotnet test
 - Logging (Serilog): `Serilog` section in `appsettings.*.json`
 - CORS origins: adjust in `ServiceCollectionExtensions.cs`
 
-## Docker (Upcoming)
+## Docker
 
-Containerization support is planned in a subsequent step. A production Dockerfile and compose stack will be added after finalizing the API surface.
+Build the production image:
+
+```bash
+docker build -t job-application-tracker-api .
+```
+
+Run the container, exposing port `8080` and persisting the SQLite database to your host:
+
+```bash
+docker run --rm -p 8080:8080 `
+  -v ${PWD}/data:/app/data `
+  job-application-tracker-api
+```
+
+- The API listens on `http://localhost:8080`.
+- The SQLite database is stored under `/app/data/job-application-tracker.db`; bind a host directory if you want to persist data between runs.
+- Override configuration via environment variables, e.g. `-e ConnectionStrings__Default="Data Source=/app/data/job-application-tracker.db"`.
