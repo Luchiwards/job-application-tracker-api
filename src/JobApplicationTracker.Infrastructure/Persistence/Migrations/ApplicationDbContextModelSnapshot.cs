@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace JobApplicationTracker.Infrastructure.Persistence.Migrations
+namespace JobApplicationTracker.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -19,9 +19,9 @@ namespace JobApplicationTracker.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("JobApplicationTracker.Domain.Entities.JobApplication", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
@@ -57,6 +57,38 @@ namespace JobApplicationTracker.Infrastructure.Persistence.Migrations
                     b.HasIndex("CompanyName", "Position");
 
                     b.ToTable("JobApplications", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CompanyName = "Google",
+                            DateApplied = new DateTime(2025, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastUpdatedOn = new DateTimeOffset(new DateTime(2025, 1, 15, 8, 30, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Notes = "Initial phone screen complete.",
+                            Position = "Backend Engineer",
+                            Status = "Interviewing"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CompanyName = "Apple",
+                            DateApplied = new DateTime(2025, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastUpdatedOn = new DateTimeOffset(new DateTime(2025, 2, 11, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Notes = "Waiting for recruiter feedback.",
+                            Position = "Full Stack Developer",
+                            Status = "Applied"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CompanyName = "Microsoft",
+                            DateApplied = new DateTime(2024, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastUpdatedOn = new DateTimeOffset(new DateTime(2025, 1, 2, 14, 15, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Notes = "Offer expires next week.",
+                            Position = "Site Reliability Engineer",
+                            Status = "Offered"
+                        });
                 });
 #pragma warning restore 612, 618
         }

@@ -7,7 +7,7 @@ using MediatR;
 
 namespace JobApplicationTracker.Application.Features.JobApplications.Commands.Delete;
 
-public sealed record DeleteJobApplicationCommand(Guid Id) : IRequest;
+public sealed record DeleteJobApplicationCommand(int Id) : IRequest;
 
 public sealed class DeleteJobApplicationCommandHandler : IRequestHandler<DeleteJobApplicationCommand>
 {

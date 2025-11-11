@@ -18,6 +18,10 @@ obj/
 
 # Generated files
 /src/JobApplicationTracker.Api/job-application-tracker.db
+/src/JobApplicationTracker.Api/job-application-tracker.db-shm
+/src/JobApplicationTracker.Api/job-application-tracker.db-wal
+/src/JobApplicationTracker.Infrastructure/Persistence/Migrations/
+!/src/JobApplicationTracker.Infrastructure/Persistence/Migrations/.gitkeep
 
 # OS
 .DS_Store

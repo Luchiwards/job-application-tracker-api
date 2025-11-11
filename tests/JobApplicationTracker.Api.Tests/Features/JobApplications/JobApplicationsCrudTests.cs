@@ -4,6 +4,7 @@ using System.Text.Json;
 using FluentAssertions;
 using JobApplicationTracker.Api.Common.Pagination;
 using JobApplicationTracker.Api.Features.JobApplications.Contracts;
+using JobApplicationTracker.Api.Tests.Data;
 using JobApplicationTracker.Api.Tests.Infrastructure;
 using JobApplicationTracker.Domain.Enums;
 using JobApplicationTracker.Infrastructure.Persistence;
@@ -38,6 +39,7 @@ public sealed class JobApplicationsCrudTests : IClassFixture<ApiWebApplicationFa
         var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
         pendingMigrations.Should().BeEmpty("database schema should be up to date for integration tests");
         await dbContext.JobApplications.ExecuteDeleteAsync();
+        await TestDataSeeder.SeedAsync(dbContext);
     }
 
     public Task DisposeAsync() => Task.CompletedTask;
@@ -91,7 +93,7 @@ public sealed class JobApplicationsCrudTests : IClassFixture<ApiWebApplicationFa
         {
             CompanyName = createRequest.CompanyName,
             Position = "Senior Backend Engineer",
-            Status = ApplicationStatus.Interviewing,
+            Status = ApplicationStatus.InProcess,
             DateApplied = createRequest.DateApplied,
             Notes = "First interview completed"
         };

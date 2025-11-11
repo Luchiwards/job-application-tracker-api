@@ -21,7 +21,7 @@ public sealed class JobApplicationRepository : IJobApplicationRepository
     }
 
     public async Task<JobApplication?> GetByIdAsync(
-        Guid id,
+        int id,
         bool asTracking = false,
         CancellationToken cancellationToken = default)
     {

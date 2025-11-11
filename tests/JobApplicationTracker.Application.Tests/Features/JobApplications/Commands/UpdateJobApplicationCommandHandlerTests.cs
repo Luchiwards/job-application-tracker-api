@@ -35,7 +35,7 @@ public class UpdateJobApplicationCommandHandlerTests
             existing.Id,
             "Contoso Ltd",
             "Senior Developer",
-            ApplicationStatus.Interviewing,
+            ApplicationStatus.InProcess,
             DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-3)),
             "Second interview scheduled");
 
@@ -48,18 +48,18 @@ public class UpdateJobApplicationCommandHandlerTests
 
         existing.CompanyName.Should().Be("Contoso Ltd");
         existing.Position.Should().Be("Senior Developer");
-        existing.Status.Should().Be(ApplicationStatus.Interviewing);
+        existing.Status.Should().Be(ApplicationStatus.InProcess);
     }
 
     [Fact]
     public async Task HandleShouldThrowWhenApplicationNotFound()
     {
         // Arrange
-        _repository.GetByIdAsync(Arg.Any<Guid>(), true, Arg.Any<CancellationToken>())
+        _repository.GetByIdAsync(Arg.Any<int>(), true, Arg.Any<CancellationToken>())
             .Returns((JobApplication?)null);
 
         var command = new UpdateJobApplicationCommand(
-            Guid.NewGuid(),
+            1,
             "Missing Co",
             "Developer",
             ApplicationStatus.Applied,

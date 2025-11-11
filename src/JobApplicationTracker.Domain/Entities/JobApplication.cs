@@ -7,7 +7,8 @@ namespace JobApplicationTracker.Domain.Entities;
 
 public sealed class JobApplication : Entity
 {
-    private JobApplication(Guid id,
+    private JobApplication(
+        int id,
         string companyName,
         string position,
         ApplicationStatus status,
@@ -40,10 +41,10 @@ public sealed class JobApplication : Entity
         ApplicationStatus status,
         DateOnly dateApplied,
         string? notes = null,
-        Guid? id = null)
+        int? id = null)
     {
         return new JobApplication(
-            id ?? Guid.NewGuid(),
+            id ?? 0,
             Guard.AgainstNullOrWhiteSpace(companyName, nameof(companyName)),
             Guard.AgainstNullOrWhiteSpace(position, nameof(position)),
             status,

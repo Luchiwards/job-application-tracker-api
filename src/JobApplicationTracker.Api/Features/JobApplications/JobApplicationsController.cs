@@ -43,11 +43,11 @@ public sealed class JobApplicationsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("{id:guid}", Name = nameof(GetByIdAsync))]
+    [HttpGet("{id:int}", Name = nameof(GetByIdAsync))]
     [ProducesResponseType(typeof(JobApplicationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<JobApplicationResponse>> GetByIdAsync(
-        Guid id,
+        int id,
         CancellationToken cancellationToken)
     {
         var query = new GetJobApplicationByIdQuery(id);
@@ -82,12 +82,12 @@ public sealed class JobApplicationsController : ControllerBase
             response);
     }
 
-    [HttpPut("{id:guid}")]
+    [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAsync(
-        Guid id,
+        int id,
         [FromBody] UpdateJobApplicationRequest request,
         CancellationToken cancellationToken)
     {
@@ -103,10 +103,10 @@ public sealed class JobApplicationsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteAsync(int id, CancellationToken cancellationToken)
     {
         var command = new DeleteJobApplicationCommand(id);
         await _mediator.Send(command, cancellationToken);

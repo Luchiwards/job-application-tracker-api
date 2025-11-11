@@ -8,7 +8,7 @@ using MediatR;
 
 namespace JobApplicationTracker.Application.Features.JobApplications.Queries.GetById;
 
-public sealed record GetJobApplicationByIdQuery(Guid Id) : IRequest<JobApplicationDto>;
+public sealed record GetJobApplicationByIdQuery(int Id) : IRequest<JobApplicationDto>;
 
 public sealed class GetJobApplicationByIdQueryHandler
     : IRequestHandler<GetJobApplicationByIdQuery, JobApplicationDto>

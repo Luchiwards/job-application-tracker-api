@@ -5,7 +5,7 @@ using JobApplicationTracker.Domain.Enums;
 namespace JobApplicationTracker.Application.Features.JobApplications.Models;
 
 public sealed record JobApplicationDto(
-    Guid Id,
+    int Id,
     string CompanyName,
     string Position,
     ApplicationStatus Status,

@@ -10,7 +10,7 @@ namespace JobApplicationTracker.Application.Features.JobApplications.Abstraction
 public interface IJobApplicationRepository
 {
     Task<JobApplication?> GetByIdAsync(
-        Guid id,
+        int id,
         bool asTracking = false,
         CancellationToken cancellationToken = default);
 

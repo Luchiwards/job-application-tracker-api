@@ -1,4 +1,5 @@
 using JobApplicationTracker.Domain.Entities;
+using JobApplicationTracker.Infrastructure.Persistence.Seeding;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobApplicationTracker.Infrastructure.Persistence;
@@ -15,6 +16,7 @@ public sealed class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        modelBuilder.ApplySeedData();
         base.OnModelCreating(modelBuilder);
     }
 }

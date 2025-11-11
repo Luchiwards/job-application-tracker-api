@@ -9,7 +9,7 @@ using MediatR;
 namespace JobApplicationTracker.Application.Features.JobApplications.Commands.Update;
 
 public sealed record UpdateJobApplicationCommand(
-    Guid Id,
+    int Id,
     string CompanyName,
     string Position,
     ApplicationStatus Status,

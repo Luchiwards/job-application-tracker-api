@@ -37,7 +37,7 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
             .ToList();
 
         if (failures.Count != 0)
-        {
+            {
             throw new ValidationException(failures);
         }
 

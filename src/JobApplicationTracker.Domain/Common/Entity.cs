@@ -4,12 +4,12 @@ namespace JobApplicationTracker.Domain.Common;
 
 public abstract class Entity
 {
-    protected Entity(Guid id)
+    protected Entity(int id)
     {
         Id = id;
     }
 
-    public Guid Id { get; protected init; }
+    public int Id { get; protected set; }
 
     public override bool Equals(object? obj)
     {
