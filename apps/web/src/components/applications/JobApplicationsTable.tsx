@@ -1,4 +1,7 @@
+import type { KeyboardEvent, MouseEvent } from 'react'
+
 import type { JobApplication, JobApplicationStatus } from '@web/types/jobApplications'
+import { formatDate, formatDateTime } from '@web/utils/date'
 
 import ApplicationStatusSelect from './ApplicationStatusSelect'
 
@@ -7,38 +10,11 @@ type JobApplicationsTableProps = {
   onEdit: (id: number) => void
   onStatusChange: (id: number, status: JobApplicationStatus, application: JobApplication) => void
   onDelete?: (id: number) => void
+  onSelect?: (application: JobApplication) => void
   isLoading?: boolean
   statusDisabled?: boolean
   deleteDisabled?: boolean
   emptyMessage?: string
-}
-
-const formatDate = (value: string): string => {
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.valueOf())) {
-    return value
-  }
-
-  return parsed.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
-}
-
-const formatDateTime = (value: string): string => {
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.valueOf())) {
-    return value
-  }
-
-  return parsed.toLocaleString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
 }
 
 const JobApplicationsTable = ({
@@ -46,6 +22,7 @@ const JobApplicationsTable = ({
   onEdit,
   onStatusChange,
   onDelete,
+  onSelect,
   isLoading = false,
   statusDisabled = false,
   deleteDisabled = false,
@@ -80,15 +57,52 @@ const JobApplicationsTable = ({
         </thead>
         <tbody>
           {applications.map((application) => (
-            <tr key={application.id}>
+            <tr
+              key={application.id}
+              className={
+                onSelect
+                  ? 'applications-table__row applications-table__row--selectable'
+                  : 'applications-table__row'
+              }
+              onClick={
+                onSelect
+                  ? () => {
+                      onSelect(application)
+                    }
+                  : undefined
+              }
+              onKeyDown={
+                onSelect
+                  ? (event: KeyboardEvent<HTMLTableRowElement>) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault()
+                        onSelect(application)
+                      }
+                    }
+                  : undefined
+              }
+              tabIndex={onSelect ? 0 : undefined}
+              role={onSelect ? 'button' : undefined}
+              aria-label={
+                onSelect
+                  ? `View application details for ${application.companyName}, ${application.position}`
+                  : undefined
+              }
+            >
               <td data-label="Company">{application.companyName}</td>
               <td data-label="Position">{application.position}</td>
               <td data-label="Status">
-                <ApplicationStatusSelect
-                  value={application.status}
-                  onChange={(status) => onStatusChange(application.id, status, application)}
-                  disabled={statusDisabled}
-                />
+                <div
+                  className="applications-table__status"
+                  onClick={(event) => event.stopPropagation()}
+                  onKeyDown={(event) => event.stopPropagation()}
+                >
+                  <ApplicationStatusSelect
+                    value={application.status}
+                    onChange={(status) => onStatusChange(application.id, status, application)}
+                    disabled={statusDisabled}
+                  />
+                </div>
               </td>
               <td data-label="Date Applied">
                 {formatDate(application.dateApplied)}
@@ -100,7 +114,11 @@ const JobApplicationsTable = ({
                 <button
                   type="button"
                   className="applications-table__edit"
-                  onClick={() => onEdit(application.id)}
+                  onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                    event.stopPropagation()
+                    onEdit(application.id)
+                  }}
+                  onKeyDown={(event) => event.stopPropagation()}
                 >
                   Edit
                 </button>
@@ -108,9 +126,13 @@ const JobApplicationsTable = ({
                   <button
                     type="button"
                     className="applications-table__delete"
-                    onClick={() => onDelete(application.id)}
+                    onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                      event.stopPropagation()
+                      onDelete(application.id)
+                    }}
                     aria-label={`Delete ${application.companyName} application`}
                     disabled={deleteDisabled}
+                    onKeyDown={(event) => event.stopPropagation()}
                   >
                     <svg
                       className="applications-table__delete-icon"

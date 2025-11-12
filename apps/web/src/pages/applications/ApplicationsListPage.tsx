@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import JobApplicationsTable from '@web/components/applications/JobApplicationsTable'
 import Alert from '@web/components/shared/Alert'
 import PaginationControls from '@web/components/shared/PaginationControls'
+import ApplicationDetailsCard from '@web/components/applications/ApplicationDetailsCard'
 import { useAppDispatch, useAppSelector } from '@web/store/hooks'
 import {
   changeJobApplicationStatus,
@@ -88,6 +89,7 @@ type ApplicationsTableSectionProps = {
   onEdit: (id: number) => void
   onStatusChange: (id: number, status: JobApplicationStatus, application: JobApplication) => void
   onDelete: (id: number) => void
+  onSelect: (application: JobApplication) => void
   onPageChange: (page: number) => void
   onPageSizeChange: (pageSize: number) => void
   statusDisabled: boolean
@@ -99,6 +101,7 @@ const ApplicationsTableSection = memo(
     onEdit,
     onStatusChange,
     onDelete,
+    onSelect,
     onPageChange,
     onPageSizeChange,
     statusDisabled,
@@ -119,6 +122,7 @@ const ApplicationsTableSection = memo(
           onEdit={onEdit}
           onStatusChange={onStatusChange}
           onDelete={onDelete}
+          onSelect={onSelect}
           isLoading={isLoading}
           statusDisabled={statusDisabled}
           deleteDisabled={deleteDisabled}
@@ -152,6 +156,7 @@ const ApplicationsListPage = () => {
   const [statusUpdateRequested, setStatusUpdateRequested] = useState(false)
   const [deleteRequested, setDeleteRequested] = useState<number | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [selectedApplicationId, setSelectedApplicationId] = useState<number | null>(null)
 
   useEffect(() => {
     dispatch(fetchJobApplications())
@@ -238,6 +243,17 @@ const ApplicationsListPage = () => {
     [dispatch],
   )
 
+  const handleSelectApplication = useCallback(
+    (application: JobApplication) => {
+      setSelectedApplicationId(application.id)
+    },
+    [],
+  )
+
+  const handleCloseDetails = useCallback(() => {
+    setSelectedApplicationId(null)
+  }, [])
+
   const handlePageChange = useCallback(
     (page: number) => {
       dispatch(fetchJobApplications({ page }))
@@ -254,6 +270,10 @@ const ApplicationsListPage = () => {
 
   const isMutationLoading = mutationStatus === 'loading'
   const isDeleteLoading = deleteStatus === 'loading'
+
+  const selectedApplication = useAppSelector((state) =>
+    selectedApplicationId !== null ? jobApplicationsSelectors.selectById(state, selectedApplicationId) ?? null : null,
+  )
 
   const alerts: Array<{
     key: string
@@ -295,6 +315,27 @@ const ApplicationsListPage = () => {
     })
   }
 
+  useEffect(() => {
+    if (selectedApplicationId !== null && !selectedApplication) {
+      setSelectedApplicationId(null)
+    }
+  }, [selectedApplicationId, selectedApplication])
+
+  useEffect(() => {
+    if (!selectedApplication) {
+      return
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSelectedApplicationId(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedApplication])
+
   return (
     <section className="applications">
       <ApplicationsHeader onAddNew={handleAddNew} />
@@ -313,7 +354,25 @@ const ApplicationsListPage = () => {
         onPageSizeChange={handlePageSizeChange}
         statusDisabled={isMutationLoading}
         deleteDisabled={isDeleteLoading}
+        onSelect={handleSelectApplication}
       />
+
+      {selectedApplication ? (
+        <div
+          className="applications-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="application-details-title"
+          onClick={handleCloseDetails}
+        >
+          <div
+            className="applications-overlay__content"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <ApplicationDetailsCard application={selectedApplication} onClose={handleCloseDetails} />
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }
