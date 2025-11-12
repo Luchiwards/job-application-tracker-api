@@ -44,19 +44,10 @@ Swagger UI is available at `/swagger`. API routes remain versioned under `/api/v
 dotnet test JobApplicationTracker.sln
 ```
 
-The solution includes layered test coverage under `tests/`:
+The solution uses a layered test suite under `tests/` to follow the testing pyramid:
 
-- Application layer unit tests check validator rules and command handlers—for example ensuring `CreateJobApplicationCommandValidator` rejects invalid payloads and `UpdateJobApplicationCommandHandler` updates or throws when the record is missing.
-- Infrastructure tests run against an in-memory SQLite database to validate `JobApplicationRepository` persistence, filtering, and pagination behavior.
-- API integration tests spin up the web host via `ApiWebApplicationFactory` and exercise the full CRUD flow over HTTP, asserting responses and schema migrations.
+- **Application layer unit tests** keep the base of the pyramid broad by isolating handlers and validators. They mock repositories to prove business rules—e.g., `CreateJobApplicationCommandValidator` rejects future dates, and `UpdateJobApplicationCommandHandler` raises `NotFoundException` when a record is missing—so logic regressions surface quickly.
+- **Infrastructure tests** run against an ephemeral SQLite instance to verify data-access code (`JobApplicationRepository`) without hitting production databases. They assert pagination and filtering behave as expected, catching issues that pure mocks would miss while staying fast.
+- **API integration tests** boot the full host through `ApiWebApplicationFactory` and drive the HTTP CRUD flow end to end. This ensures routing, middleware, JSON contracts, and EF Core migrations work together, providing high-confidence coverage at the top of the pyramid without over-relying on slow tests.
 
-### Docker
 
-Build and run from the `apps/api` directory:
-
-```bash
-docker build -t job-application-tracker-api .
-docker run --rm -p 8080:8080 job-application-tracker-api
-```
-
-The Dockerfile is colocated alongside this README.

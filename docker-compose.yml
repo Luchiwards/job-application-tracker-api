@@ -17,3 +17,17 @@ services:
     ports:
       - "3000:80"
 
+  api-tests:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    working_dir: /workspace
+    volumes:
+      - ./apps/api:/workspace
+    entrypoint: ["dotnet"]
+
+  web-tools:
+    image: node:20
+    working_dir: /workspace
+    volumes:
+      - ./apps/web:/workspace
+    entrypoint: ["npm"]
+

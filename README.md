@@ -11,6 +11,7 @@ A full-stack workspace that combines the existing Clean Architecture ASP.NET Cor
 
 - [.NET SDK 8.0](https://dotnet.microsoft.com/download)
 - [Node.js ≥ 20](https://nodejs.org/)
+- [Docker](https://www.docker.com/products/docker-desktop/)
 
 ## Install Dependencies
 
@@ -19,16 +20,25 @@ cd apps/web && npm install
 dotnet restore apps/api/JobApplicationTracker.sln
 ```
 
+### Apply EF Core migrations
+
+Run the database migrations before starting the API so the SQLite file is up to date:
+
+```bash
+cd apps/api
+dotnet ef database update --project src/JobApplicationTracker.Infrastructure --startup-project src/JobApplicationTracker.Api
+```
+
 ### Frontend environment variables
 
 Create a local env file for Vite before running the web app:
 
 ```bash
 cd apps/web
-cp .env.example .env.local   # or copy to .env if you prefer
+cp .env.example .env   
 ```
 
-Adjust `VITE_API_BASE_URL` if the API runs on a different host/port. `.env.local` stays out of git so you can keep machine-specific overrides, while `.env` can hold shared defaults.
+Adjust `VITE_API_BASE_URL` if the API runs on a different host/port. `.env` stays out of git so you can keep machine-specific overridess.
 
 ## Docker Compose
 
@@ -52,6 +62,7 @@ docker compose down
 
 ## Quality Checks
 
-- `npm run lint:web` – ESLint (flat config) against the React workspace
-- `npm run build:web` – TypeScript build + production bundle
-- `dotnet test apps/api/JobApplicationTracker.sln` – Unit and integration tests
+- `docker compose run --rm api-tests test JobApplicationTracker.sln` – Run .NET tests using the SDK toolbox container
+- `docker compose run --rm web-tools install` – Install Node dependencies before running web tooling commands
+- `docker compose run --rm web-tools run lint` – Lint the React workspace inside the Node toolbox container
+- `docker compose run --rm web-tools run build` – Build the React app inside the Node toolbox container
