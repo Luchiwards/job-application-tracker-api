@@ -1,0 +1,26 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cs,csproj}]
+indent_size = 4
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+# top-most EditorConfig file
+root = true
+
+[*.cs]
+# CA2007 suppressed in pipes that rely on ConfigureAwait(false) to avoid context capture
+dotnet_diagnostic.CA2007.severity = silent
+# CA2016 suppressed because MediatR RequestHandlerDelegate does not expose a CancellationToken overload
+dotnet_diagnostic.CA2016.severity = silent

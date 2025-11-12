@@ -1,0 +1,20 @@
+# Dependency artifacts
+node_modules
+dist
+npm-debug.log*
+
+# VCS and editor metadata
+.git
+.gitignore
+.vscode
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+
+# Build scripts
+Dockerfile
+Dockerfile.*
+

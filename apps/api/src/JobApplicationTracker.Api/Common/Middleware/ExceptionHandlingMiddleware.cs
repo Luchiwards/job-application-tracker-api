@@ -1,0 +1,131 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using FluentValidation;
+using JobApplicationTracker.Application.Common.Exceptions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Logging;
+
+namespace JobApplicationTracker.Api.Common.Middleware;
+
+/// <summary>
+/// Centralized middleware that converts known exceptions into RFC 7807-compliant responses and logs failures.
+/// </summary>
+public sealed class ExceptionHandlingMiddleware : IMiddleware
+{
+    private static readonly Action<ILogger, string, Exception?> ValidationFailureMessage =
+        LoggerMessage.Define<string>(
+            LogLevel.Warning,
+            new EventId(1, nameof(ValidationFailureMessage)),
+            "Validation failure processing {Path}");
+
+    private static readonly Action<ILogger, string, Exception?> NotFoundMessage =
+        LoggerMessage.Define<string>(
+            LogLevel.Warning,
+            new EventId(2, nameof(NotFoundMessage)),
+            "Resource not found processing {Path}");
+
+    private static readonly Action<ILogger, string, Exception?> UnhandledExceptionMessage =
+        LoggerMessage.Define<string>(
+            LogLevel.Error,
+            new EventId(3, nameof(UnhandledExceptionMessage)),
+            "Unhandled exception processing {Path}");
+
+    private readonly IProblemDetailsService _problemDetailsService;
+    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExceptionHandlingMiddleware"/> class.
+    /// </summary>
+    /// <param name="problemDetailsService">Service used to emit standardized problem details responses.</param>
+    /// <param name="logger">Logger used to record exception details.</param>
+    public ExceptionHandlingMiddleware(
+        IProblemDetailsService problemDetailsService,
+        ILogger<ExceptionHandlingMiddleware> logger)
+    {
+        _problemDetailsService = problemDetailsService;
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// Executes the middleware pipeline, translating known exceptions into appropriate HTTP responses.
+    /// </summary>
+    /// <param name="context">The current HTTP context.</param>
+    /// <param name="next">The next middleware in the pipeline.</param>
+    /// <returns>A task that completes when the downstream middleware finishes processing.</returns>
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    {
+        try
+        {
+            await next(context);
+        }
+        catch (ValidationException ex)
+        {
+            ValidationFailureMessage(_logger, context.Request.Path, ex);
+            var problemDetails = new HttpValidationProblemDetails(
+                CreateValidationErrors(ex.Errors))
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Validation failure",
+                Detail = "See errors property for additional details."
+            };
+
+            await WriteProblemDetailsAsync(context, problemDetails);
+        }
+        catch (NotFoundException ex)
+        {
+            NotFoundMessage(_logger, context.Request.Path, ex);
+            var problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Resource not found",
+                Detail = ex.Message
+            };
+
+            await WriteProblemDetailsAsync(context, problemDetails);
+        }
+        catch (Exception ex)
+        {
+            UnhandledExceptionMessage(_logger, context.Request.Path, ex);
+            var problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "An unexpected error occurred."
+            };
+
+            await WriteProblemDetailsAsync(context, problemDetails);
+        }
+    }
+
+    private async Task WriteProblemDetailsAsync(HttpContext httpContext, ProblemDetails problemDetails)
+    {
+        problemDetails.Instance ??= httpContext.Request.Path;
+        httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
+        var written = await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+        {
+            HttpContext = httpContext,
+            ProblemDetails = problemDetails
+        });
+
+        if (!written)
+        {
+            await httpContext.Response.WriteAsJsonAsync(problemDetails);
+        }
+    }
+
+    private static Dictionary<string, string[]> CreateValidationErrors(
+        IEnumerable<FluentValidation.Results.ValidationFailure> errors)
+    {
+        return errors
+            .GroupBy(error => error.PropertyName)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(error => error.ErrorMessage).ToArray(),
+                StringComparer.Ordinal);
+    }
+}
+
+
