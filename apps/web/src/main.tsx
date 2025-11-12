@@ -6,6 +6,7 @@ import './styles/global.css'
 import App from './App'
 import { store } from './store'
 
+// Bootstraps the React tree with global providers and client-side routing.
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>

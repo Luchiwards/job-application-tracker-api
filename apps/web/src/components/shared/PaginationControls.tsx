@@ -11,6 +11,12 @@ type PaginationControlsProps = {
   isLoading?: boolean
 }
 
+/**
+ * Displays pagination controls with navigation buttons and optional page-size selector.
+ *
+ * @param {PaginationControlsProps} props Pagination metadata and callback handlers.
+ * @returns {JSX.Element} Pagination control cluster.
+ */
 const PaginationControls = ({
   page,
   pageSize,
@@ -21,18 +27,29 @@ const PaginationControls = ({
   pageSizeOptions = [10, 20, 50],
   isLoading = false,
 }: PaginationControlsProps) => {
+  /**
+   * Steps back one page when the previous button is enabled.
+   */
   const handlePrevious = () => {
     if (page > 1) {
       onPageChange(page - 1)
     }
   }
 
+  /**
+   * Advances one page when the next button is enabled.
+   */
   const handleNext = () => {
     if (page < totalPages) {
       onPageChange(page + 1)
     }
   }
 
+  /**
+   * Emits the selected page size as a number for paginated fetches.
+   *
+   * @param {ChangeEvent<HTMLSelectElement>} event Native change event from the select control.
+   */
   const handlePageSizeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nextPageSize = Number.parseInt(event.target.value, 10)
     onPageSizeChange?.(nextPageSize)

@@ -17,6 +17,12 @@ type JobApplicationsTableProps = {
   emptyMessage?: string
 }
 
+/**
+ * Renders the job applications collection within a responsive table including inline status updates.
+ *
+ * @param {JobApplicationsTableProps} props Table data, callbacks, and UI flags.
+ * @returns {JSX.Element} Applications table or placeholder content.
+ */
 const JobApplicationsTable = ({
   applications,
   onEdit,

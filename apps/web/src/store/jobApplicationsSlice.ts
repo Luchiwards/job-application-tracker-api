@@ -72,6 +72,13 @@ const initialState: JobApplicationsState = {
   currentFilters: initialFilters,
 }
 
+/**
+ * Merges incoming query params with the filters currently stored in state.
+ *
+ * @param {RootState} state Current Redux state.
+ * @param {JobApplicationsQueryParams} [params] Optional override parameters.
+ * @returns {JobApplicationsState['currentFilters']} Filter set to use for requests.
+ */
 const getFilters = (
   state: RootState,
   params?: JobApplicationsQueryParams,
@@ -89,6 +96,12 @@ const getFilters = (
   }
 }
 
+/**
+ * Attempts to extract a user-friendly message from thrown errors.
+ *
+ * @param {unknown} error Error thrown during async execution.
+ * @returns {string} Message safe to display in the UI.
+ */
 const extractErrorMessage = (error: unknown): string => {
   if (isAxiosError(error)) {
     return (
@@ -111,6 +124,12 @@ type FetchJobApplicationsResult = {
   filters: JobApplicationsState['currentFilters']
 }
 
+/**
+ * Retrieves a paginated list of job applications using server filters.
+ *
+ * @param {JobApplicationsQueryParams | undefined} params Optional filter overrides.
+ * @returns {Promise<FetchJobApplicationsResult>} Fulfilled payload containing items and applied filters.
+ */
 export const fetchJobApplications = createAsyncThunk<
   FetchJobApplicationsResult,
   JobApplicationsQueryParams | undefined,
@@ -127,6 +146,12 @@ export const fetchJobApplications = createAsyncThunk<
   }
 })
 
+/**
+ * Retrieves and normalizes a single job application by id.
+ *
+ * @param {number} id Identifier of the requested job application.
+ * @returns {Promise<JobApplication>} Job application entity from the API.
+ */
 export const fetchJobApplicationById = createAsyncThunk<
   JobApplication,
   number,
@@ -140,6 +165,12 @@ export const fetchJobApplicationById = createAsyncThunk<
   }
 })
 
+/**
+ * Creates a new job application and returns the created entity.
+ *
+ * @param {CreateJobApplicationPayload} payload Formatted payload for creation.
+ * @returns {Promise<JobApplication>} Newly created job application.
+ */
 export const createJobApplication = createAsyncThunk<
   JobApplication,
   CreateJobApplicationPayload
@@ -152,6 +183,12 @@ export const createJobApplication = createAsyncThunk<
   }
 })
 
+/**
+ * Updates an existing job application before re-fetching the server copy.
+ *
+ * @param {{ id: number; payload: UpdateJobApplicationPayload }} args Update payload together with ID.
+ * @returns {Promise<JobApplication>} Updated job application fetched after the update.
+ */
 export const updateJobApplication = createAsyncThunk<
   JobApplication,
   { id: number; payload: UpdateJobApplicationPayload }
@@ -165,6 +202,12 @@ export const updateJobApplication = createAsyncThunk<
   }
 })
 
+/**
+ * Updates only the status of a specific job application.
+ *
+ * @param {{ id: number; payload: JobApplicationStatusChangePayload }} args Identifier and payload to send.
+ * @returns {Promise<JobApplication>} Updated job application returned from the API.
+ */
 export const changeJobApplicationStatus = createAsyncThunk<
   JobApplication,
   { id: number; payload: JobApplicationStatusChangePayload }
@@ -178,6 +221,12 @@ export const changeJobApplicationStatus = createAsyncThunk<
   }
 })
 
+/**
+ * Deletes a job application identified by id.
+ *
+ * @param {number} id Identifier of the job application to remove.
+ * @returns {Promise<number>} Identifier of the deleted application.
+ */
 export const deleteJobApplication = createAsyncThunk<number, number>(
   'jobApplications/delete',
   async (id, { rejectWithValue }) => {
@@ -194,6 +243,12 @@ const jobApplicationsSlice = createSlice({
   name: 'jobApplications',
   initialState,
   reducers: {
+    /**
+     * Merges the provided filter fragment into the persisted filter state.
+     *
+     * @param {JobApplicationsState} state Current slice state.
+     * @param {{ payload: Partial<JobApplicationsState['currentFilters']> }} action Action containing filter overrides.
+     */
     setFilters(
       state,
       action: {
@@ -205,19 +260,47 @@ const jobApplicationsSlice = createSlice({
         ...action.payload,
       }
     },
+    /**
+     * Updates the current page within the filter state.
+     *
+     * @param {JobApplicationsState} state Current slice state.
+     * @param {{ payload: number }} action Action containing the new page.
+     */
     setPage(state, action: { payload: number }) {
       state.currentFilters.page = action.payload
     },
+    /**
+     * Updates the current page size within the filter state.
+     *
+     * @param {JobApplicationsState} state Current slice state.
+     * @param {{ payload: number }} action Action containing the new page size.
+     */
     setPageSize(state, action: { payload: number }) {
       state.currentFilters.pageSize = action.payload
     },
+    /**
+     * Stores the status filter for subsequent fetches.
+     *
+     * @param {JobApplicationsState} state Current slice state.
+     * @param {{ payload: JobApplicationStatus | undefined }} action Action containing the requested status filter.
+     */
     setStatusFilter(state, action: { payload: JobApplicationStatus | undefined }) {
       state.currentFilters.status = action.payload
     },
+    /**
+     * Resets mutation status flags and errors.
+     *
+     * @param {JobApplicationsState} state Current slice state.
+     */
     resetMutationState(state) {
       state.mutationStatus = 'idle'
       state.mutationError = null
     },
+    /**
+     * Resets delete status flags and errors.
+     *
+     * @param {JobApplicationsState} state Current slice state.
+     */
     resetDeleteState(state) {
       state.deleteStatus = 'idle'
       state.deleteError = null
@@ -302,23 +385,80 @@ export const { setFilters, setPage, setPageSize, setStatusFilter, resetMutationS
 
 export default jobApplicationsSlice.reducer
 
+/**
+ * Entity adapter selectors scoped to the job applications slice.
+ */
 export const jobApplicationsSelectors = jobApplicationsAdapter.getSelectors<RootState>(
   (state) => state.jobApplications,
 )
 
+/**
+ * Returns the full job applications state slice.
+ *
+ * @param {RootState} state Redux store state.
+ * @returns {JobApplicationsState} Job applications slice.
+ */
 export const selectJobApplicationsState = (state: RootState) => state.jobApplications
+/**
+ * Selects the status for list retrieval requests.
+ *
+ * @param {RootState} state Redux store state.
+ * @returns {RequestStatus} Current list request status.
+ */
 export const selectJobApplicationsListStatus = (state: RootState) =>
   state.jobApplications.listStatus
+/**
+ * Selects the last error encountered while listing applications.
+ *
+ * @param {RootState} state Redux store state.
+ * @returns {string | null} Error message if one exists.
+ */
 export const selectJobApplicationsError = (state: RootState) => state.jobApplications.listError
+/**
+ * Selects the current pagination metadata.
+ *
+ * @param {RootState} state Redux store state.
+ * @returns {PaginationState} Pagination info from the slice.
+ */
 export const selectJobApplicationsPagination = (state: RootState) =>
   state.jobApplications.pagination
+/**
+ * Selects the currently applied filters.
+ *
+ * @param {RootState} state Redux store state.
+ * @returns {JobApplicationsState['currentFilters']} Filter configuration.
+ */
 export const selectJobApplicationsFilters = (state: RootState) =>
   state.jobApplications.currentFilters
+/**
+ * Selects the mutation request status.
+ *
+ * @param {RootState} state Redux store state.
+ * @returns {RequestStatus} Mutation request status.
+ */
 export const selectJobApplicationsMutationStatus = (state: RootState) =>
   state.jobApplications.mutationStatus
+/**
+ * Selects the last mutation error message.
+ *
+ * @param {RootState} state Redux store state.
+ * @returns {string | null} Mutation error message.
+ */
 export const selectJobApplicationsMutationError = (state: RootState) =>
   state.jobApplications.mutationError
+/**
+ * Selects the delete request status.
+ *
+ * @param {RootState} state Redux store state.
+ * @returns {RequestStatus} Delete request status.
+ */
 export const selectJobApplicationsDeleteStatus = (state: RootState) =>
   state.jobApplications.deleteStatus
+/**
+ * Selects the last delete error message.
+ *
+ * @param {RootState} state Redux store state.
+ * @returns {string | null} Delete error message.
+ */
 export const selectJobApplicationsDeleteError = (state: RootState) =>
   state.jobApplications.deleteError

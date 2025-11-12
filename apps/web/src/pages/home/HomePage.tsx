@@ -1,5 +1,10 @@
 import './HomePage.css'
 
+/**
+ * Landing experience shown when navigating directly to the home route.
+ *
+ * @returns {JSX.Element} Welcome hero with quick actions.
+ */
 const HomePage = () => (
   <section className="home">
     <h1 className="home__title">Welcome to your application hub</h1>

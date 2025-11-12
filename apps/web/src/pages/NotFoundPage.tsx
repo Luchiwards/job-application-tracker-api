@@ -1,5 +1,10 @@
 import { Link } from 'react-router-dom'
 
+/**
+ * Displays a friendly message when the requested route does not exist.
+ *
+ * @returns {JSX.Element} Not-found page redirecting users to the applications list.
+ */
 const NotFoundPage = () => (
   <section className="not-found">
     <h1>Page not found</h1>

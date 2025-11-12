@@ -8,6 +8,12 @@ const ApplicationCreatePage = lazy(() => import('./pages/applications/Applicatio
 const ApplicationEditPage = lazy(() => import('./pages/applications/ApplicationEditPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
+/**
+ * Configures the root router for the job application tracker UI and
+ * wires lazy-loaded pages behind a suspense boundary.
+ *
+ * @returns {JSX.Element} Application route tree.
+ */
 const App = () => (
   <Suspense fallback={<div className="app__loading">Loading...</div>}>
     <Routes>

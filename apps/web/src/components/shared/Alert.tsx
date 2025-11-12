@@ -15,6 +15,12 @@ const variantClassName: Record<AlertVariant, string> = {
   info: 'alert--info',
 }
 
+/**
+ * Shows contextual feedback with optional dismissal capability.
+ *
+ * @param {AlertProps} props Component props including variant, content, and dismissal handler.
+ * @returns {JSX.Element} Styled alert banner element.
+ */
 const Alert = ({ variant = 'info', children, onClose, dismissible = false }: AlertProps) => (
   <div className={`alert ${variantClassName[variant]}`}>
     <div className="alert__content">{children}</div>

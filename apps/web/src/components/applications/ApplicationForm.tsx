@@ -17,6 +17,12 @@ type ApplicationFormProps = {
   submitLabel?: string
 }
 
+/**
+ * Presents a controlled form for creating or updating a job application record.
+ *
+ * @param {ApplicationFormProps} props Component props including defaults, handlers, and UI state.
+ * @returns {JSX.Element} Form layout for job application data entry.
+ */
 const ApplicationForm = ({
   defaultValues,
   onSubmit,
@@ -44,6 +50,11 @@ const ApplicationForm = ({
 
   const submit = handleSubmit((values) => onSubmit(values))
 
+  /**
+   * Renders the available status options as option elements for the status select.
+   *
+   * @returns {JSX.Element[]} Status option elements keyed by status value.
+   */
   const renderStatusOptions = () =>
     jobApplicationStatuses.map((status: JobApplicationStatus) => (
       <option key={status} value={status}>

@@ -29,6 +29,11 @@ import {
   type JobApplicationStatus,
 } from '@web/types/jobApplications'
 
+/**
+ * Filters the applications list based on status while persisting selection in Redux state.
+ *
+ * @returns {JSX.Element} Status select wrapped with loading-aware state.
+ */
 const StatusFilter = memo(() => {
   const dispatch = useAppDispatch()
   const listStatus = useAppSelector(selectJobApplicationsListStatus)
@@ -74,6 +79,12 @@ type ApplicationsHeaderProps = {
   onAddNew: () => void
 }
 
+/**
+ * Displays the list header with filters and primary CTA to add new applications.
+ *
+ * @param {ApplicationsHeaderProps} props Header callbacks.
+ * @returns {JSX.Element} Header content for the applications page.
+ */
 const ApplicationsHeader = memo(({ onAddNew }: ApplicationsHeaderProps) => (
   <header className="applications__header">
     <StatusFilter />
@@ -96,6 +107,12 @@ type ApplicationsTableSectionProps = {
   deleteDisabled: boolean
 }
 
+/**
+ * Wraps the applications table with loading states, error alerts, and pagination controls.
+ *
+ * @param {ApplicationsTableSectionProps} props Table handlers and UI flags.
+ * @returns {JSX.Element} Applications table section.
+ */
 const ApplicationsTableSection = memo(
   ({
     onEdit,
@@ -143,6 +160,11 @@ const ApplicationsTableSection = memo(
 
 ApplicationsTableSection.displayName = 'ApplicationsTableSection'
 
+/**
+ * Coordinates the job applications list view including filters, table interactions, and detail overlay.
+ *
+ * @returns {JSX.Element} Page content for browsing job applications.
+ */
 const ApplicationsListPage = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -158,10 +180,12 @@ const ApplicationsListPage = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [selectedApplicationId, setSelectedApplicationId] = useState<number | null>(null)
 
+  // Fetch the first page of applications when the list mounts.
   useEffect(() => {
     dispatch(fetchJobApplications())
   }, [dispatch])
 
+  // Surface success or error feedback when a status mutation completes.
   useEffect(() => {
     if (!statusUpdateRequested) {
       return
@@ -179,6 +203,7 @@ const ApplicationsListPage = () => {
     }
   }, [dispatch, mutationStatus, statusUpdateRequested])
 
+  // Refresh list data once deletions complete and surface outcomes.
   useEffect(() => {
     if (deleteRequested === null) {
       return
@@ -197,6 +222,7 @@ const ApplicationsListPage = () => {
     }
   }, [deleteRequested, deleteStatus, dispatch])
 
+  // Display navigation-driven success messages then clear the history state.
   useEffect(() => {
     if (location.state && typeof location.state === 'object' && 'message' in location.state) {
       const message = String(location.state.message)
@@ -205,10 +231,18 @@ const ApplicationsListPage = () => {
     }
   }, [location, navigate])
 
+  /**
+   * Navigates to the create page for a new job application.
+   */
   const handleAddNew = useCallback(() => {
     navigate('/applications/new')
   }, [navigate])
 
+  /**
+   * Navigates to the edit page for the selected application.
+   *
+   * @param {number} id Identifier of the job application.
+   */
   const handleEdit = useCallback(
     (id: number) => {
       navigate(`/applications/${id}/edit`)
@@ -216,6 +250,13 @@ const ApplicationsListPage = () => {
     [navigate],
   )
 
+  /**
+   * Dispatches a status change request for a specific application.
+   *
+   * @param {number} id Identifier of the application to update.
+   * @param {JobApplicationStatus} status New status to persist.
+   * @param {JobApplication} application Current application data used to build payload.
+   */
   const handleStatusChange = useCallback(
     (id: number, status: JobApplicationStatus, application: JobApplication) => {
       setStatusUpdateRequested(true)
@@ -235,6 +276,11 @@ const ApplicationsListPage = () => {
     [dispatch],
   )
 
+  /**
+   * Dispatches a delete request for a specific application.
+   *
+   * @param {number} id Identifier of the application to delete.
+   */
   const handleDelete = useCallback(
     (id: number) => {
       setDeleteRequested(id)
@@ -243,6 +289,11 @@ const ApplicationsListPage = () => {
     [dispatch],
   )
 
+  /**
+   * Tracks a selected application to display its details overlay.
+   *
+   * @param {JobApplication} application Selected job application.
+   */
   const handleSelectApplication = useCallback(
     (application: JobApplication) => {
       setSelectedApplicationId(application.id)
@@ -250,10 +301,18 @@ const ApplicationsListPage = () => {
     [],
   )
 
+  /**
+   * Closes the application detail overlay.
+   */
   const handleCloseDetails = useCallback(() => {
     setSelectedApplicationId(null)
   }, [])
 
+  /**
+   * Updates the current page in Redux and fetches the next page.
+   *
+   * @param {number} page Page number to load.
+   */
   const handlePageChange = useCallback(
     (page: number) => {
       dispatch(fetchJobApplications({ page }))
@@ -261,6 +320,11 @@ const ApplicationsListPage = () => {
     [dispatch],
   )
 
+  /**
+   * Updates the page size and refreshes the list from the first page.
+   *
+   * @param {number} pageSize Page size to request.
+   */
   const handlePageSizeChange = useCallback(
     (pageSize: number) => {
       dispatch(fetchJobApplications({ pageSize, page: 1 }))
@@ -315,12 +379,14 @@ const ApplicationsListPage = () => {
     })
   }
 
+  // Clear the selected application if it disappears from the store (e.g., deleted).
   useEffect(() => {
     if (selectedApplicationId !== null && !selectedApplication) {
       setSelectedApplicationId(null)
     }
   }, [selectedApplicationId, selectedApplication])
 
+  // Close the overlay when users press Escape while details are open.
   useEffect(() => {
     if (!selectedApplication) {
       return

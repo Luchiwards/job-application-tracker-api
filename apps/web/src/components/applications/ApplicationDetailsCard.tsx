@@ -7,6 +7,12 @@ type ApplicationDetailsCardProps = {
   onClose: () => void
 }
 
+/**
+ * Renders a modal-style card with the selected job application metadata and notes.
+ *
+ * @param {ApplicationDetailsCardProps} props Component props containing the application and close handler.
+ * @returns {JSX.Element} Detail view for a single job application.
+ */
 const ApplicationDetailsCard = ({ application, onClose }: ApplicationDetailsCardProps) => {
   return (
     <article className="application-details" aria-labelledby="application-details-title">

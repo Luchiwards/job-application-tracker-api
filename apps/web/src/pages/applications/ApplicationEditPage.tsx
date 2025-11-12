@@ -18,6 +18,11 @@ import {
   type JobApplicationFormValues,
 } from '@web/types/jobApplications'
 
+/**
+ * Retrieves an application for editing and coordinates update mutations.
+ *
+ * @returns {JSX.Element} Page layout for editing a job application.
+ */
 const ApplicationEditPage = () => {
   const { id } = useParams()
   const applicationId = Number(id)
@@ -37,6 +42,7 @@ const ApplicationEditPage = () => {
   const isInvalidId = Number.isNaN(applicationId)
   const isLoading = !application
 
+  // Fetch the application on mount and reset mutation state on unmount.
   useEffect(() => {
     if (isInvalidId) {
       return
@@ -51,6 +57,11 @@ const ApplicationEditPage = () => {
     }
   }, [dispatch, applicationId, application, isInvalidId])
 
+  /**
+   * Prepares default form values derived from the application entity.
+   *
+   * @returns {JobApplicationFormValues | undefined} Form values once the application is loaded.
+   */
   const defaultValues = useMemo(() => {
     if (!application) {
       return undefined
@@ -59,6 +70,12 @@ const ApplicationEditPage = () => {
     return mapApplicationToFormValues(application)
   }, [application])
 
+  /**
+   * Persists changes to the application and redirects to the list view when done.
+   *
+   * @param {JobApplicationFormValues} values Form values submitted by the user.
+   * @returns {Promise<void>} Promise resolving after navigation.
+   */
   const handleSubmit = async (values: JobApplicationFormValues) => {
     if (isInvalidId) {
       return
@@ -73,6 +90,9 @@ const ApplicationEditPage = () => {
     }
   }
 
+  /**
+   * Returns the user to the applications list without saving changes.
+   */
   const handleCancel = () => {
     navigate('/applications')
   }

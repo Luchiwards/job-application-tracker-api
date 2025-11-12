@@ -24,6 +24,12 @@ const statusById: Record<number, JobApplicationStatus> = {
 
 export const jobApplicationStatusSchema = z.enum(jobApplicationStatuses)
 
+/**
+ * Validates that a string can be parsed into a date.
+ *
+ * @param {string} value Date string provided by the form.
+ * @returns {boolean} Whether the value can be parsed by `Date`.
+ */
 const isValidDateOnly = (value: string) => !Number.isNaN(Date.parse(value))
 
 export const jobApplicationFormSchema = z.object({
@@ -125,6 +131,12 @@ export const jobApplicationsQuerySchema = z.object({
   appliedTo: z.string().optional(),
 })
 
+/**
+ * Normalizes status values returned by the API to a union member.
+ *
+ * @param {JobApplicationStatus | number} value Status returned from the API.
+ * @returns {JobApplicationStatus} Status in string representation.
+ */
 export const normalizeStatus = (value: JobApplicationStatus | number): JobApplicationStatus => {
   if (typeof value === 'string') {
     return value as JobApplicationStatus
@@ -133,6 +145,12 @@ export const normalizeStatus = (value: JobApplicationStatus | number): JobApplic
   return statusById[value] ?? 'Applied'
 }
 
+/**
+ * Maps a raw API job application into the UI friendly structure.
+ *
+ * @param {RawJobApplication} raw Raw application returned by the API.
+ * @returns {JobApplication} Normalized job application.
+ */
 export const mapJobApplication = (raw: RawJobApplication): JobApplication => ({
   id: raw.id,
   companyName: raw.companyName,
@@ -143,6 +161,12 @@ export const mapJobApplication = (raw: RawJobApplication): JobApplication => ({
   lastUpdatedOn: raw.lastUpdatedOn,
 })
 
+/**
+ * Maps a raw paginated response into a normalized structure with camelCase fields.
+ *
+ * @param {RawPaginatedResponse<RawJobApplication>} raw Raw paginated payload.
+ * @returns {PaginatedJobApplicationsResponse<JobApplication>} Normalized paginated response.
+ */
 export const mapPaginatedJobApplicationsResponse = (
   raw: RawPaginatedResponse<RawJobApplication>,
 ): PaginatedJobApplicationsResponse<JobApplication> => {
@@ -164,6 +188,12 @@ export const PAGE_SIZE = Number.parseInt(import.meta.env.VITE_PAGE_SIZE ?? '10',
 export const getJobApplicationStatusLabel = (status: JobApplicationStatus): string =>
   status.replace(/([A-Z])/g, ' $1').trim()
 
+/**
+ * Converts a date string to ISO date format if possible.
+ *
+ * @param {string} value Date string from API or form.
+ * @returns {string} Normalized ISO date-only string.
+ */
 const toIsoDate = (value: string): string => {
   const date = new Date(value)
   if (Number.isNaN(date.valueOf())) {
@@ -172,6 +202,12 @@ const toIsoDate = (value: string): string => {
   return date.toISOString().slice(0, 10)
 }
 
+/**
+ * Transforms form values into an API payload.
+ *
+ * @param {JobApplicationFormValues} values Form values captured from the UI.
+ * @returns {JobApplicationPayload} Payload ready for transmission to the API.
+ */
 export const mapFormValuesToPayload = (values: JobApplicationFormValues): JobApplicationPayload => ({
   companyName: values.companyName,
   position: values.position,
@@ -180,6 +216,12 @@ export const mapFormValuesToPayload = (values: JobApplicationFormValues): JobApp
   notes: values.notes ?? null,
 })
 
+/**
+ * Transforms a job application entity into form values for editing.
+ *
+ * @param {JobApplication} application Application entity from state.
+ * @returns {JobApplicationFormValues} Values to seed the form.
+ */
 export const mapApplicationToFormValues = (application: JobApplication): JobApplicationFormValues => ({
   companyName: application.companyName,
   position: application.position,

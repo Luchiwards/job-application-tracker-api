@@ -1,5 +1,10 @@
 import { NavLink, Outlet } from 'react-router-dom'
 
+/**
+ * Provides the global application chrome with header, content outlet, and footer.
+ *
+ * @returns {JSX.Element} Layout structure surrounding routed pages.
+ */
 const MainLayout = () => (
   <div className="layout">
     <header className="layout__header">

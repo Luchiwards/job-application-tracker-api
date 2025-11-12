@@ -2,72 +2,88 @@
 
 React + TypeScript frontend bootstrapped with Vite and organised for a growing product surface.
 
+## Getting Started
+
+1. **Install prerequisites**
+   - [Node.js 20+](https://nodejs.org/) (ships with npm 10+)
+   - Running instance of the Job Application Tracker API (defaults to `http://localhost:8080`)
+
+2. **Install dependencies**
+
+   ```bash
+   cd apps/web
+   npm install
+   ```
+
+3. **Configure environment variables**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Update `VITE_API_BASE_URL` so it points to your API (e.g. `http://localhost:8080/api`).
+
+4. **Run the dev server**
+
+   ```bash
+   npm run dev
+   ```
+
+   The app starts on [http://localhost:3000](http://localhost:3000). Keep the API running so data loads correctly.
+
+## Available Scripts
+
+All commands are executed from `apps/web`:
+
+```bash
+npm run dev        # Start the Vite dev server with hot reload
+npm run build      # Type-check and generate the production bundle
+npm run preview    # Preview the production build locally
+npm run lint       # Run ESLint across the project
+npm run format     # Check formatting with Prettier
+npm run format:fix # Automatically fix formatting issues
+```
+
+Repository-level npm scripts (`npm run dev:web`, etc.) proxy to the same commands if you prefer running them from the repo root.
+
+## Architecture Overview
+
+- **Routing (`src/App.tsx`)** – Uses React Router v6 with lazy-loaded pages. Routes are nested under `MainLayout` and include the applications list, create, edit, and not-found screens.
+- **State Management (`src/store`)** – Redux Toolkit powers the global store. `jobApplicationsSlice.ts` uses an entity adapter for normalized caching, async thunks for network calls, and typed hooks (`useAppDispatch`, `useAppSelector`) for components.
+- **UI Features (`src/pages/applications`)**
+  - `ApplicationsListPage` fetches data, manages filters, and renders `JobApplicationsTable` with inline status updates and an overlay detail card.
+  - `ApplicationCreatePage` and `ApplicationEditPage` reuse `ApplicationForm` for validated create/edit flows with optimistic feedback.
+- **Services (`src/services`)** – `jobApplicationsApi.ts` wraps the Axios client and exposes typed helpers for list, read, create, update, change-status, and delete operations.
+- **Shared Components** – `src/components` contains reusable pieces such as the form, table, status select, alerts, and pagination controls that keep UX consistent across pages.
+
+## API Endpoints
+
+The frontend talks to the Job Application Tracker API via the following REST endpoints (all relative to `VITE_API_BASE_URL`):
+
+- `GET /job-applications` – List applications with pagination and filters.
+- `GET /job-applications/:id` – Retrieve a single application.
+- `POST /job-applications` – Create an application.
+- `PUT /job-applications/:id` – Update an application or change its status.
+- `DELETE /job-applications/:id` – Delete an application.
+
 ## Folder Layout
 
-- `src/components` – Reusable UI pieces
-- `src/hooks` – Custom React hooks
-- `src/layouts` – Shared page shells (root layout, auth layout, etc.)
-- `src/pages` – Route-level screens (`home`, `pipeline`, `settings`, …)
+- `src/components` – Reusable UI pieces (forms, table, alerts, etc.)
+- `src/hooks` – Typed Redux hooks
+- `src/layouts` – Shared page shells (`MainLayout`)
+- `src/pages` – Route-level screens
 - `src/services` – API clients and network utilities
-- `src/store` – Global state management (Redux Toolkit, Zustand, etc.)
-- `src/styles` – Global + feature styles
-- `src/types`, `src/utils` – Cross-cutting types and helpers
+- `src/store` – Redux Toolkit store and slice definitions
+- `src/styles` – Global and feature-level stylesheets
+- `src/types`, `src/utils` – Shared types and helper utilities
 
 Path aliases (see `tsconfig.app.json`) let you import with `@web/...`.
 
-## Scripts
-
-Run these commands from the `apps/web` directory:
-
-```bash
-npm run dev        # Start the Vite dev server
-npm run build      # Type check + production bundle
-npm run lint       # ESLint using the shared config
-npm run format     # Check code formatting
-npm run format:fix # Fix code formatting
-npm run preview    # Preview production build
-```
-
-Or use the convenience scripts from the repository root:
-
-```bash
-npm run dev:web    # Start the Vite dev server
-npm run build:web  # Type check + production bundle
-npm run lint:web   # ESLint
-```
-
 ## Environment Variables
 
-Runtime configuration lives in `.env` files (Vite exposes variables that start with `VITE_`). Copy the template and adjust values for your environment:
+Vite exposes variables prefixed with `VITE_` at build-time:
 
-```bash
-cp .env.example .env.local   # or copy to .env if you want shared defaults
-```
+- `VITE_API_BASE_URL` – Base URL for the REST API.
+- `VITE_PAGE_SIZE` – Default page size for paginated queries.
 
-- `VITE_API_BASE_URL` – Base URL for the API (e.g. `http://localhost:8080/api/v1`)
-- `VITE_PAGE_SIZE` – Default page size for the job applications table
-
-Vite merges `.env` (ignored by git) with the checked-in defaults when you run `npm run dev`, so it’s ideal for machine-specific values.
-
-## Testing & Storybook (future)
-
-Add testing/stories within `src/` and wire them to workspace-level scripts when the tooling is introduced (Vitest, Cypress, Storybook, etc.).
-
-## Job Applications Module
-
-- Dedicated routes power the CRUD flow:
-  - `/applications` – Paginated list with status filtering and in-table status updates
-  - `/applications/new` – Form to add a new application with client-side validation
-  - `/applications/:id/edit` – Edit existing records with real-time feedback
-- State is managed with Redux Toolkit entity adapters for normalized caching and async thunks for API calls.
-- All backend calls flow through the typed Axios client in `src/services`.
-
-## Styling
-
-Global tokens live in `src/styles/global.css`. Layout-specific styles belong inside the feature or layout folder (e.g. `pages/home/HomePage.css`).
-
-Shared visual primitives (alerts, tables, forms, pagination) are defined in `src/styles/app.css` to keep the application UI consistent.
-
-## API Integration
-
-Service modules under `src/services` should consume the backend via typed clients. Consider creating a shared `packages/contracts` package once API DTOs need to be reused across apps.
+Values in `.env` override `.env.example` locally and are ignored by git.

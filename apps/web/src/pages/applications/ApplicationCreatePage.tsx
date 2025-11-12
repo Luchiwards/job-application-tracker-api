@@ -12,6 +12,11 @@ import {
 } from '@web/store/jobApplicationsSlice'
 import { mapFormValuesToPayload, type JobApplicationFormValues } from '@web/types/jobApplications'
 
+/**
+ * Provides the create job application flow and coordinates API interactions.
+ *
+ * @returns {JSX.Element} Page layout for creating a job application.
+ */
 const ApplicationCreatePage = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -19,6 +24,7 @@ const ApplicationCreatePage = () => {
   const mutationStatus = useAppSelector(selectJobApplicationsMutationStatus)
   const mutationError = useAppSelector(selectJobApplicationsMutationError)
 
+  // Reset mutation state when leaving the create view to avoid stale errors.
   useEffect(
     () => () => {
       dispatch(resetMutationState())
@@ -26,6 +32,12 @@ const ApplicationCreatePage = () => {
     [dispatch],
   )
 
+  /**
+   * Persists a new job application and redirects to the list on success.
+   *
+   * @param {JobApplicationFormValues} values Form values submitted by the user.
+   * @returns {Promise<void>} Promise resolving when navigation completes.
+   */
   const handleSubmit = async (values: JobApplicationFormValues) => {
     const result = await dispatch(createJobApplication(mapFormValuesToPayload(values)))
 
@@ -34,6 +46,9 @@ const ApplicationCreatePage = () => {
     }
   }
 
+  /**
+   * Returns the user to the applications list without creating a record.
+   */
   const handleCancel = () => {
     navigate('/applications')
   }
