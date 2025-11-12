@@ -6,6 +6,7 @@ A full-stack workspace that combines the existing Clean Architecture ASP.NET Cor
 
 - `apps/api` – .NET solution (API, application, domain, infrastructure projects + test suites)
 - `apps/web` – React + Vite frontend scaffolded with TypeScript and a scalable folder layout (contains all Node.js dependencies and tooling)
+- Additional details live alongside each app: see `apps/api/README.md` for the API and `apps/web/README.md` for the web client.
 
 ## Prerequisites
 
