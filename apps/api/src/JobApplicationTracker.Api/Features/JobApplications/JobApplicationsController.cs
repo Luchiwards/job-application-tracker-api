@@ -14,6 +14,10 @@ namespace JobApplicationTracker.Api.Features.JobApplications;
 [ApiController]
 [Route("api/v{version:apiVersion}/job-applications")]
 [ApiVersion("1.0")]
+[Produces("application/json")]
+/// <summary>
+/// Provides endpoints for managing job applications including listing, creating, updating, and deleting entries.
+/// </summary>
 public sealed class JobApplicationsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -23,6 +27,12 @@ public sealed class JobApplicationsController : ControllerBase
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Retrieves a paginated list of job applications matching the supplied filters.
+    /// </summary>
+    /// <param name="request">Query parameters to filter and paginate job applications.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A paginated collection of job applications.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(PaginatedResponse<JobApplicationResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PaginatedResponse<JobApplicationResponse>>> GetAsync(
@@ -43,6 +53,12 @@ public sealed class JobApplicationsController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Retrieves a single job application by its identifier.
+    /// </summary>
+    /// <param name="id">Identifier of the job application.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The requested job application if found.</returns>
     [HttpGet("{id:int}", Name = nameof(GetByIdAsync))]
     [ProducesResponseType(typeof(JobApplicationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -55,6 +71,12 @@ public sealed class JobApplicationsController : ControllerBase
         return Ok(ToResponse(result));
     }
 
+    /// <summary>
+    /// Creates a new job application.
+    /// </summary>
+    /// <param name="request">Details of the job application to create.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The created job application.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(JobApplicationResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -97,6 +119,13 @@ public sealed class JobApplicationsController : ControllerBase
             response);
     }
 
+    /// <summary>
+    /// Updates an existing job application.
+    /// </summary>
+    /// <param name="id">Identifier of the job application to update.</param>
+    /// <param name="request">Updated job application values.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content when the operation succeeds.</returns>
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -133,6 +162,12 @@ public sealed class JobApplicationsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Permanently deletes a job application.
+    /// </summary>
+    /// <param name="id">Identifier of the job application to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content when the job application is removed.</returns>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
