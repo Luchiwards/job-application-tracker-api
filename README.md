@@ -21,15 +21,6 @@ cd apps/web && npm install
 dotnet restore apps/api/JobApplicationTracker.sln
 ```
 
-### Apply EF Core migrations
-
-Run the database migrations before starting the API so the SQLite file is up to date:
-
-```bash
-cd apps/api
-dotnet ef database update --project src/JobApplicationTracker.Infrastructure --startup-project src/JobApplicationTracker.Api
-```
-
 ### Frontend environment variables
 
 Create a local env file for Vite before running the web app:

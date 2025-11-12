@@ -20,8 +20,7 @@ obj/
 /apps/api/src/JobApplicationTracker.Api/job-application-tracker.db
 /apps/api/src/JobApplicationTracker.Api/job-application-tracker.db-shm
 /apps/api/src/JobApplicationTracker.Api/job-application-tracker.db-wal
-/apps/api/src/JobApplicationTracker.Infrastructure/Persistence/Migrations/
-!/apps/api/src/JobApplicationTracker.Infrastructure/Persistence/Migrations/.gitkeep
+
 
 # Local databases
 /data/
