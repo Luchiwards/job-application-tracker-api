@@ -19,6 +19,17 @@ cd apps/web && npm install
 dotnet restore apps/api/JobApplicationTracker.sln
 ```
 
+### Frontend environment variables
+
+Create a local env file for Vite before running the web app:
+
+```bash
+cd apps/web
+cp .env.example .env.local   # or copy to .env if you prefer
+```
+
+Adjust `VITE_API_BASE_URL` if the API runs on a different host/port. `.env.local` stays out of git so you can keep machine-specific overrides, while `.env` can hold shared defaults.
+
 ## Docker Compose
 
 To run the API and web containers together from the repository root:

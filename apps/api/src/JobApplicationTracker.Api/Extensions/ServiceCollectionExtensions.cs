@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using JobApplicationTracker.Api.Common.Json;
 using JobApplicationTracker.Api.Common.Middleware;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -21,6 +22,7 @@ public static class PresentationServiceRegistration
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
             });
 

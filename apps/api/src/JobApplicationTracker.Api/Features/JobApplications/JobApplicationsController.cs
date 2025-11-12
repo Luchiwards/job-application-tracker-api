@@ -62,6 +62,21 @@ public sealed class JobApplicationsController : ControllerBase
         [FromBody] CreateJobApplicationRequest request,
         CancellationToken cancellationToken)
     {
+        if (request is null)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Invalid payload",
+                Detail = "Request body is required.",
+                Status = StatusCodes.Status400BadRequest,
+            });
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
         var command = new CreateJobApplicationCommand(
             request.CompanyName,
             request.Position,
@@ -91,6 +106,21 @@ public sealed class JobApplicationsController : ControllerBase
         [FromBody] UpdateJobApplicationRequest request,
         CancellationToken cancellationToken)
     {
+        if (request is null)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Invalid payload",
+                Detail = "Request body is required.",
+                Status = StatusCodes.Status400BadRequest,
+            });
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
         var command = new UpdateJobApplicationCommand(
             id,
             request.CompanyName,
