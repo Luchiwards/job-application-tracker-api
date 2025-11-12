@@ -14,6 +14,34 @@ type JobApplicationsTableProps = {
   emptyMessage?: string
 }
 
+const formatDate = (value: string): string => {
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.valueOf())) {
+    return value
+  }
+
+  return parsed.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+const formatDateTime = (value: string): string => {
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.valueOf())) {
+    return value
+  }
+
+  return parsed.toLocaleString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
 const JobApplicationsTable = ({
   applications,
   onEdit,
@@ -45,6 +73,7 @@ const JobApplicationsTable = ({
             <th scope="col">Position</th>
             <th scope="col">Status</th>
             <th scope="col">Date Applied</th>
+            <th scope="col">Last Updated</th>
             <th scope="col" className="applications-table__actions-header">
               Actions
             </th>
@@ -63,11 +92,10 @@ const JobApplicationsTable = ({
                 />
               </td>
               <td data-label="Date Applied">
-                {new Date(application.dateApplied).toLocaleDateString(undefined, {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                })}
+                {formatDate(application.dateApplied)}
+              </td>
+              <td data-label="Last Updated">
+                {formatDateTime(application.lastUpdatedOn)}
               </td>
               <td className="applications-table__actions" data-label="Actions">
                 <button

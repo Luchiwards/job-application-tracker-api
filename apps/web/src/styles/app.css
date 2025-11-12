@@ -108,12 +108,12 @@
   background: rgba(79, 70, 229, 0.08);
 }
 
-.applications-table__actions-header,
-.applications-table__actions {
-  text-align: right;
+.applications-table__actions-header {
+  text-align: center;
 }
 
 .applications-table__actions {
+  text-align: right;
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
