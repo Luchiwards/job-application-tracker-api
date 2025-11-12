@@ -23,7 +23,7 @@ RUN dotnet publish "src/JobApplicationTracker.Api/JobApplicationTracker.Api.cspr
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-ENV ASPNETCORE_URLS=http://+:8080 \
+ENV HTTP_PORTS=8080 \
     ASPNETCORE_ENVIRONMENT=Production \
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 \
     ConnectionStrings__Default="Data Source=/app/data/job-application-tracker.db"

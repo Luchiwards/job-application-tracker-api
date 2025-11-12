@@ -32,8 +32,7 @@ public sealed class JobApplicationConfiguration : IEntityTypeConfiguration<JobAp
 
         builder.Property(application => application.Status)
             .HasConversion<string>()
-            .HasMaxLength(50)
-            .HasDefaultValue(ApplicationStatus.Applied);
+            .HasMaxLength(50);
 
         builder.Property(application => application.DateApplied)
             .HasConversion(DateTimeConverters.DateOnlyToDateTime)
