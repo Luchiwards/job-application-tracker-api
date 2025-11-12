@@ -18,9 +18,12 @@ A full-stack workspace that combines the existing Clean Architecture ASP.NET Cor
 
 ```bash
 cd apps/web && npm install
+```
+Return to root of project.
+
+```bash
 dotnet restore apps/api/JobApplicationTracker.sln
 ```
-
 ### Frontend environment variables
 
 Create a local env file for Vite before running the web app:
