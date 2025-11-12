@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import JobApplicationsTable from '@web/components/applications/JobApplicationsTable'
@@ -28,16 +28,123 @@ import {
   type JobApplicationStatus,
 } from '@web/types/jobApplications'
 
+const StatusFilter = memo(() => {
+  const dispatch = useAppDispatch()
+  const listStatus = useAppSelector(selectJobApplicationsListStatus)
+  const filters = useAppSelector(selectJobApplicationsFilters)
+
+  const uniqueStatuses = useMemo(() => jobApplicationStatuses, [])
+  const statusFilterValue = filters.status ?? 'all'
+  const isLoading = listStatus === 'loading'
+
+  const handleStatusFilterChange = useCallback(
+    (statusValue: string) => {
+      const nextStatus =
+        statusValue === 'all' ? undefined : (statusValue as JobApplicationStatus)
+      dispatch(fetchJobApplications({ status: nextStatus, page: 1 }))
+    },
+    [dispatch],
+  )
+
+  return (
+    <div className="applications__filters">
+      <label htmlFor="statusFilter">
+        Status
+        <select
+          id="statusFilter"
+          value={statusFilterValue}
+          onChange={(event) => handleStatusFilterChange(event.target.value)}
+          disabled={isLoading}
+        >
+          <option value="all">All statuses</option>
+          {uniqueStatuses.map((status) => (
+            <option key={status} value={status}>
+              {getJobApplicationStatusLabel(status)}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
+  )
+})
+
+StatusFilter.displayName = 'StatusFilter'
+
+type ApplicationsHeaderProps = {
+  onAddNew: () => void
+}
+
+const ApplicationsHeader = memo(({ onAddNew }: ApplicationsHeaderProps) => (
+  <header className="applications__header">
+    <StatusFilter />
+    <button type="button" className="applications__primary" onClick={onAddNew}>
+      Add new application
+    </button>
+  </header>
+))
+
+ApplicationsHeader.displayName = 'ApplicationsHeader'
+
+type ApplicationsTableSectionProps = {
+  onEdit: (id: number) => void
+  onStatusChange: (id: number, status: JobApplicationStatus, application: JobApplication) => void
+  onDelete: (id: number) => void
+  onPageChange: (page: number) => void
+  onPageSizeChange: (pageSize: number) => void
+  statusDisabled: boolean
+  deleteDisabled: boolean
+}
+
+const ApplicationsTableSection = memo(
+  ({
+    onEdit,
+    onStatusChange,
+    onDelete,
+    onPageChange,
+    onPageSizeChange,
+    statusDisabled,
+    deleteDisabled,
+  }: ApplicationsTableSectionProps) => {
+    const applications = useAppSelector(jobApplicationsSelectors.selectAll)
+    const listStatus = useAppSelector(selectJobApplicationsListStatus)
+    const listError = useAppSelector(selectJobApplicationsError)
+    const pagination = useAppSelector(selectJobApplicationsPagination)
+
+    const isLoading = listStatus === 'loading'
+
+    return (
+      <>
+        {listError ? <Alert variant="error">{listError}</Alert> : null}
+        <JobApplicationsTable
+          applications={applications}
+          onEdit={onEdit}
+          onStatusChange={onStatusChange}
+          onDelete={onDelete}
+          isLoading={isLoading}
+          statusDisabled={statusDisabled}
+          deleteDisabled={deleteDisabled}
+        />
+        <PaginationControls
+          page={pagination.page}
+          pageSize={pagination.pageSize}
+          totalPages={pagination.totalPages}
+          totalCount={pagination.totalCount}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+          isLoading={isLoading}
+        />
+      </>
+    )
+  },
+)
+
+ApplicationsTableSection.displayName = 'ApplicationsTableSection'
+
 const ApplicationsListPage = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const applications = useAppSelector(jobApplicationsSelectors.selectAll)
-  const listStatus = useAppSelector(selectJobApplicationsListStatus)
-  const listError = useAppSelector(selectJobApplicationsError)
-  const pagination = useAppSelector(selectJobApplicationsPagination)
-  const filters = useAppSelector(selectJobApplicationsFilters)
   const mutationStatus = useAppSelector(selectJobApplicationsMutationStatus)
   const mutationError = useAppSelector(selectJobApplicationsMutationError)
   const deleteStatus = useAppSelector(selectJobApplicationsDeleteStatus)
@@ -48,44 +155,43 @@ const ApplicationsListPage = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    if (listStatus === 'idle') {
-      dispatch(fetchJobApplications(undefined))
-    }
-  }, [dispatch, listStatus])
-
-  const isLoading = listStatus === 'loading'
-  const isMutationLoading = mutationStatus === 'loading'
-
-  const uniqueStatuses = useMemo(() => jobApplicationStatuses, [])
+    dispatch(fetchJobApplications(undefined))
+  }, [dispatch])
 
   useEffect(() => {
-    if (statusUpdateRequested) {
-      if (mutationStatus === 'succeeded') {
-        setSuccessMessage('Application status updated.')
-        setStatusUpdateRequested(false)
-        dispatch(resetMutationState())
-      }
+    if (!statusUpdateRequested) {
+      return
+    }
 
-      if (mutationStatus === 'failed') {
-        setStatusUpdateRequested(false)
-      }
+    if (mutationStatus === 'succeeded') {
+      setSuccessMessage('Application status updated.')
+      setStatusUpdateRequested(false)
+      dispatch(resetMutationState())
+      return
+    }
+
+    if (mutationStatus === 'failed') {
+      setStatusUpdateRequested(false)
     }
   }, [dispatch, mutationStatus, statusUpdateRequested])
 
   useEffect(() => {
-    if (deleteRequested !== null) {
-      if (deleteStatus === 'succeeded') {
-        setSuccessMessage('Application deleted.')
-        setDeleteRequested(null)
-        dispatch(resetDeleteState())
-        dispatch(fetchJobApplications(filters))
-      }
-
-      if (deleteStatus === 'failed') {
-        setDeleteRequested(null)
-      }
+    if (deleteRequested === null) {
+      return
     }
-  }, [deleteRequested, deleteStatus, dispatch, filters])
+
+    if (deleteStatus === 'succeeded') {
+      setSuccessMessage('Application deleted.')
+      setDeleteRequested(null)
+      dispatch(resetDeleteState())
+      dispatch(fetchJobApplications(undefined))
+      return
+    }
+
+    if (deleteStatus === 'failed') {
+      setDeleteRequested(null)
+    }
+  }, [deleteRequested, deleteStatus, dispatch])
 
   useEffect(() => {
     if (location.state && typeof location.state === 'object' && 'message' in location.state) {
@@ -95,80 +201,65 @@ const ApplicationsListPage = () => {
     }
   }, [location, navigate])
 
-  const handleAddNew = () => {
+  const handleAddNew = useCallback(() => {
     navigate('/applications/new')
-  }
+  }, [navigate])
 
-  const handlePageChange = (page: number) => {
-    dispatch(fetchJobApplications({ page }))
-  }
+  const handleEdit = useCallback(
+    (id: number) => {
+      navigate(`/applications/${id}/edit`)
+    },
+    [navigate],
+  )
 
-  const handlePageSizeChange = (pageSize: number) => {
-    dispatch(fetchJobApplications({ pageSize, page: 1 }))
-  }
+  const handleStatusChange = useCallback(
+    (id: number, status: JobApplicationStatus, application: JobApplication) => {
+      setStatusUpdateRequested(true)
+      dispatch(
+        changeJobApplicationStatus({
+          id,
+          payload: {
+            companyName: application.companyName,
+            position: application.position,
+            status,
+            dateApplied: application.dateApplied,
+            notes: application.notes ?? null,
+          },
+        }),
+      )
+    },
+    [dispatch],
+  )
 
-  const handleStatusFilterChange = (statusValue: string) => {
-    const nextStatus =
-      statusValue === 'all' ? undefined : (statusValue as JobApplicationStatus)
-    dispatch(fetchJobApplications({ status: nextStatus, page: 1 }))
-  }
+  const handleDelete = useCallback(
+    (id: number) => {
+      setDeleteRequested(id)
+      dispatch(deleteJobApplication(id))
+    },
+    [dispatch],
+  )
 
-  const handleStatusChange = (
-    id: number,
-    status: JobApplicationStatus,
-    application: JobApplication,
-  ) => {
-    setStatusUpdateRequested(true)
-    dispatch(
-      changeJobApplicationStatus({
-        id,
-        payload: {
-          companyName: application.companyName,
-          position: application.position,
-          status,
-          dateApplied: application.dateApplied,
-          notes: application.notes ?? null,
-        },
-      }),
-    )
-  }
+  const handlePageChange = useCallback(
+    (page: number) => {
+      dispatch(fetchJobApplications({ page }))
+    },
+    [dispatch],
+  )
 
-  const statusFilterValue = filters.status ?? 'all'
+  const handlePageSizeChange = useCallback(
+    (pageSize: number) => {
+      dispatch(fetchJobApplications({ pageSize, page: 1 }))
+    },
+    [dispatch],
+  )
+
+  const isMutationLoading = mutationStatus === 'loading'
+  const isDeleteLoading = deleteStatus === 'loading'
 
   return (
     <section className="applications">
-      <header className="applications__header">
-        <div className="applications__header-content">
-          <h1>Job Applications</h1>
-          <p className="applications__subtitle">
-            Track the status of every opportunity and update progress in real time.
-          </p>
-        </div>
-        <button type="button" className="applications__primary" onClick={handleAddNew}>
-          Add new application
-        </button>
-      </header>
+      <ApplicationsHeader onAddNew={handleAddNew} />
 
-      <div className="applications__filters">
-        <label htmlFor="statusFilter">
-          Status
-          <select
-            id="statusFilter"
-            value={statusFilterValue}
-            onChange={(event) => handleStatusFilterChange(event.target.value)}
-            disabled={isLoading}
-          >
-            <option value="all">All statuses</option>
-            {uniqueStatuses.map((status) => (
-              <option key={status} value={status}>
-                {getJobApplicationStatusLabel(status)}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      {listError ? <Alert variant="error">{listError}</Alert> : null}
       {mutationError ? (
         <Alert
           variant="error"
@@ -203,27 +294,14 @@ const ApplicationsListPage = () => {
         </Alert>
       ) : null}
 
-      <JobApplicationsTable
-        applications={applications}
-        onEdit={(id) => navigate(`/applications/${id}/edit`)}
+      <ApplicationsTableSection
+        onEdit={handleEdit}
         onStatusChange={handleStatusChange}
-        onDelete={(id) => {
-          setDeleteRequested(id)
-          dispatch(deleteJobApplication(id))
-        }}
-        isLoading={isLoading}
-        statusDisabled={isMutationLoading}
-        deleteDisabled={deleteStatus === 'loading'}
-      />
-
-      <PaginationControls
-        page={pagination.page}
-        pageSize={pagination.pageSize}
-        totalPages={pagination.totalPages}
-        totalCount={pagination.totalCount}
+        onDelete={handleDelete}
         onPageChange={handlePageChange}
         onPageSizeChange={handlePageSizeChange}
-        isLoading={isLoading}
+        statusDisabled={isMutationLoading}
+        deleteDisabled={isDeleteLoading}
       />
     </section>
   )

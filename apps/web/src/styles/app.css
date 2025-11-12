@@ -40,8 +40,8 @@
 
 .applications__header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-end;
+  justify-content: flex-start;
   gap: 1.5rem;
   flex-wrap: wrap;
 }
@@ -64,7 +64,7 @@
 .applications__primary {
   border: none;
   border-radius: 0.75rem;
-  background: linear-gradient(135deg, var(--brand-color), var(--brand-color-dark));
+  background-color: var(--brand-color);
   color: #ffffff;
   font-weight: 600;
   padding: 0.75rem 1.2rem;
@@ -75,7 +75,7 @@
 
 .applications__primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 20px 40px -24px rgba(79, 70, 229, 0.6);
+  box-shadow: 0 20px 40px -24px rgba(34, 197, 94, 0.6);
 }
 
 .applications__filters {
@@ -83,6 +83,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   align-items: flex-end;
+  flex: 1 1 220px;
 }
 
 .applications__filters label {
@@ -96,7 +97,7 @@
   background-color: var(--surface-color);
   border-radius: 1.25rem;
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.1);
   overflow-x: auto;
 }
 
@@ -105,7 +106,7 @@
 }
 
 .applications-table thead {
-  background: rgba(79, 70, 229, 0.08);
+  background: rgba(34, 197, 94, 0.08);
 }
 
 .applications-table__actions-header {
@@ -129,12 +130,12 @@
 }
 
 .applications-table__edit {
-  background-color: rgba(79, 70, 229, 0.12);
+  background-color: rgba(34, 197, 94, 0.14);
   color: var(--brand-color);
 }
 
 .applications-table__edit:hover {
-  background-color: rgba(79, 70, 229, 0.18);
+  background-color: rgba(34, 197, 94, 0.2);
 }
 
 .applications-table__delete {
@@ -162,13 +163,6 @@
   color: var(--text-muted);
 }
 
-.applications-table__legend {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid rgba(79, 70, 229, 0.1);
-  font-size: 0.9rem;
-  color: var(--text-muted);
-}
-
 .pagination {
   display: flex;
   flex-wrap: wrap;
@@ -181,7 +175,7 @@
   border: none;
   border-radius: 999px;
   padding: 0.5rem 1.1rem;
-  background-color: rgba(79, 70, 229, 0.12);
+  background-color: rgba(34, 197, 94, 0.14);
   color: var(--brand-color);
   font-weight: 600;
   transition: background-color 0.2s ease, transform 0.2s ease;
@@ -193,7 +187,7 @@
 }
 
 .pagination__button:not(:disabled):hover {
-  background-color: rgba(79, 70, 229, 0.18);
+  background-color: rgba(34, 197, 94, 0.2);
   transform: translateY(-1px);
 }
 
@@ -221,7 +215,7 @@
   border-radius: 1.25rem;
   padding: 1.75rem;
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.1);
 }
 
 .application-form__grid {
@@ -268,12 +262,12 @@
 }
 
 .application-form__secondary {
-  background-color: rgba(79, 70, 229, 0.1);
+  background-color: rgba(34, 197, 94, 0.12);
   color: var(--brand-color);
 }
 
 .application-form__secondary:hover {
-  background-color: rgba(79, 70, 229, 0.16);
+  background-color: rgba(34, 197, 94, 0.18);
 }
 
 .application-form__error {
@@ -347,21 +341,21 @@
   background-color: var(--surface-color);
   border-radius: 1.25rem;
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(79, 70, 229, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.1);
 }
 
 .not-found__link {
   justify-self: center;
   border-radius: 999px;
   padding: 0.65rem 1.4rem;
-  background-color: rgba(79, 70, 229, 0.12);
+  background-color: rgba(34, 197, 94, 0.14);
   color: var(--brand-color);
   font-weight: 600;
   transition: background-color 0.2s ease;
 }
 
 .not-found__link:hover {
-  background-color: rgba(79, 70, 229, 0.18);
+  background-color: rgba(34, 197, 94, 0.2);
 }
 
 @media (max-width: 768px) {

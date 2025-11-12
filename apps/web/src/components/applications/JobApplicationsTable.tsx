@@ -1,5 +1,4 @@
 import type { JobApplication, JobApplicationStatus } from '@web/types/jobApplications'
-import { getJobApplicationStatusLabel } from '@web/types/jobApplications'
 
 import ApplicationStatusSelect from './ApplicationStatusSelect'
 
@@ -135,13 +134,6 @@ const JobApplicationsTable = ({
           ))}
         </tbody>
       </table>
-      <div className="applications-table__legend">
-        Status legend:{' '}
-        {applications
-          .map((application) => getJobApplicationStatusLabel(application.status))
-          .filter((value, index, self) => self.indexOf(value) === index)
-          .join(', ')}
-      </div>
     </div>
   )
 }
