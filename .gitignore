@@ -17,11 +17,11 @@ obj/
 .store/
 
 # Generated files
-/src/JobApplicationTracker.Api/job-application-tracker.db
-/src/JobApplicationTracker.Api/job-application-tracker.db-shm
-/src/JobApplicationTracker.Api/job-application-tracker.db-wal
-/src/JobApplicationTracker.Infrastructure/Persistence/Migrations/
-!/src/JobApplicationTracker.Infrastructure/Persistence/Migrations/.gitkeep
+/apps/api/src/JobApplicationTracker.Api/job-application-tracker.db
+/apps/api/src/JobApplicationTracker.Api/job-application-tracker.db-shm
+/apps/api/src/JobApplicationTracker.Api/job-application-tracker.db-wal
+/apps/api/src/JobApplicationTracker.Infrastructure/Persistence/Migrations/
+!/apps/api/src/JobApplicationTracker.Infrastructure/Persistence/Migrations/.gitkeep
 
 # OS
 .DS_Store
@@ -32,6 +32,10 @@ Thumbs.db
 
 # Node modules (for frontend)
 node_modules/
+
+# Frontend build outputs
+dist/
+build/
 
 # Coverage
 coverage/

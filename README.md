@@ -1,55 +1,71 @@
 # Job Application Tracker API
 
-Clean architecture ASP.NET Core Web API for managing job application data.
+A full-stack workspace that combines the existing Clean Architecture ASP.NET Core API with a React + TypeScript client built on Vite.
 
-## Solution Structure
+## Repository Layout
 
-- `src/JobApplicationTracker.Api` – Presentation layer organised under `Features/*` (controllers + contracts) with shared helpers in `Common/`
-- `src/JobApplicationTracker.Application` – Application layer (`Features/*` contains commands/queries/models, `Common/` hosts cross-cutting plumbing such as validation)
-- `src/JobApplicationTracker.Domain` – Domain entities and value objects
-- `src/JobApplicationTracker.Infrastructure` – Infrastructure services (`Features/*` hold repositories, `Persistence/` contains EF Core context/migrations)
-- `tests/*` – Unit and integration test projects mirroring the feature layout
+- `apps/api` – .NET solution (API, application, domain, infrastructure projects + test suites)
+- `apps/web` – React + Vite frontend scaffolded with TypeScript and a scalable folder layout (contains all Node.js dependencies and tooling)
 
-## Getting Started
+## Prerequisites
+
+- [.NET SDK 8.0](https://dotnet.microsoft.com/download)
+- [Node.js ≥ 20](https://nodejs.org/)
+
+## Install Dependencies
 
 ```bash
-dotnet restore
-dotnet build
-dotnet ef database update --project src/JobApplicationTracker.Infrastructure --startup-project src/JobApplicationTracker.Api
-dotnet run --project src/JobApplicationTracker.Api
+cd apps/web && npm install
+dotnet restore apps/api/JobApplicationTracker.sln
 ```
 
-The API is versioned (`/api/v1/job-applications`) and Swagger UI is available at `/swagger` in development.
+## Running Applications
 
-### Run Tests
+- **API**
+
+  ```bash
+  dotnet build apps/api/JobApplicationTracker.sln
+  dotnet ef database update --project apps/api/src/JobApplicationTracker.Infrastructure --startup-project apps/api/src/JobApplicationTracker.Api
+  dotnet run --project apps/api/src/JobApplicationTracker.Api
+  ```
+
+  Swagger UI is available at `/swagger` in development. The HTTP surface remains versioned under `/api/v1/job-applications`.
+
+- **Frontend**
+  ```bash
+  npm run dev:web
+  ```
+  Or run directly from `apps/web`:
+  ```bash
+  cd apps/web && npm run dev
+  ```
+  The development server defaults to `http://localhost:5173`.
+
+## Quality Checks
+
+- `npm run lint:web` – ESLint (flat config) against the React workspace
+- `npm run build:web` – TypeScript build + production bundle
+- `dotnet test apps/api/JobApplicationTracker.sln` – Unit and integration tests
+
+## Conventions
+
+- TypeScript path aliases are declared in `apps/web/tsconfig.base.json`:
+  - `@web/*` resolves to `apps/web/src/*`
+  - `@datacom/*` reserved for future shared packages under `packages/*/src`
+- Frontend formatting rules live in `apps/web/prettier.config.mjs`; editor defaults are in `.editorconfig`.
+- Align backend changes with the Clean Architecture layout (`Features`, `Common`, `Persistence`, etc.) preserved under `apps/api/src`.
+
+## Docker (API)
+
+The API Dockerfile moved to `apps/api/Dockerfile`. Build and run from the repo root:
 
 ```bash
-dotnet test
-```
-
-## Environment Configuration
-
-- Database connection string: `ConnectionStrings:Default`
-- Database options: `Database:Provider`, `Database:EnableSensitiveLogging`
-- Logging (Serilog): `Serilog` section in `appsettings.*.json`
-- CORS origins: adjust in `ServiceCollectionExtensions.cs`
-
-## Docker
-
-Build the production image:
-
-```bash
-docker build -t job-application-tracker-api .
-```
-
-Run the container, exposing port `8080` and persisting the SQLite database to your host:
-
-```bash
+docker build -t job-application-tracker-api ./apps/api
 docker run --rm -p 8080:8080 `
   -v ${PWD}/data:/app/data `
   job-application-tracker-api
 ```
 
 - The API listens on `http://localhost:8080`.
-- The SQLite database is stored under `/app/data/job-application-tracker.db`; bind a host directory if you want to persist data between runs.
+- The SQLite database now lives under `apps/api/src/JobApplicationTracker.Api/job-application-tracker.db`. Bind a host directory if you need persistence.
 - Override configuration via environment variables, e.g. `-e ConnectionStrings__Default="Data Source=/app/data/job-application-tracker.db"`.
