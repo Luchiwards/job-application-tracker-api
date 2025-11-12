@@ -19,53 +19,28 @@ cd apps/web && npm install
 dotnet restore apps/api/JobApplicationTracker.sln
 ```
 
-## Running Applications
+## Docker Compose
 
-- **API**
+To run the API and web containers together from the repository root:
 
-  ```bash
-  dotnet build apps/api/JobApplicationTracker.sln
-  dotnet ef database update --project apps/api/src/JobApplicationTracker.Infrastructure --startup-project apps/api/src/JobApplicationTracker.Api
-  dotnet run --project apps/api/src/JobApplicationTracker.Api
-  ```
+```bash
+docker compose up --build
+```
 
-  Swagger UI is available at `/swagger` in development. The HTTP surface remains versioned under `/api/v1/job-applications`.
+- The API remains at `http://localhost:8080`.
+- The web app is served from `http://localhost:3000`.
+- API data is persisted under `./data/api` on the host.
 
-- **Frontend**
-  ```bash
-  npm run dev:web
-  ```
-  Or run directly from `apps/web`:
-  ```bash
-  cd apps/web && npm run dev
-  ```
-  The development server defaults to `http://localhost:5173`.
+Stop and remove containers with:
+
+```bash
+docker compose down
+```
+
+
 
 ## Quality Checks
 
 - `npm run lint:web` – ESLint (flat config) against the React workspace
 - `npm run build:web` – TypeScript build + production bundle
 - `dotnet test apps/api/JobApplicationTracker.sln` – Unit and integration tests
-
-## Conventions
-
-- TypeScript path aliases are declared in `apps/web/tsconfig.base.json`:
-  - `@web/*` resolves to `apps/web/src/*`
-  - `@datacom/*` reserved for future shared packages under `packages/*/src`
-- Frontend formatting rules live in `apps/web/prettier.config.mjs`; editor defaults are in `.editorconfig`.
-- Align backend changes with the Clean Architecture layout (`Features`, `Common`, `Persistence`, etc.) preserved under `apps/api/src`.
-
-## Docker (API)
-
-The API Dockerfile moved to `apps/api/Dockerfile`. Build and run from the repo root:
-
-```bash
-docker build -t job-application-tracker-api ./apps/api
-docker run --rm -p 8080:8080 `
-  -v ${PWD}/data:/app/data `
-  job-application-tracker-api
-```
-
-- The API listens on `http://localhost:8080`.
-- The SQLite database now lives under `apps/api/src/JobApplicationTracker.Api/job-application-tracker.db`. Bind a host directory if you need persistence.
-- Override configuration via environment variables, e.g. `-e ConnectionStrings__Default="Data Source=/app/data/job-application-tracker.db"`.

@@ -1,0 +1,17 @@
+services:
+  api:
+    build:
+      context: ./apps/api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/api:/app/data
+
+  web:
+    build:
+      context: ./apps/web
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
+
