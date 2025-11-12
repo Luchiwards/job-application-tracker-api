@@ -23,6 +23,9 @@ obj/
 /apps/api/src/JobApplicationTracker.Infrastructure/Persistence/Migrations/
 !/apps/api/src/JobApplicationTracker.Infrastructure/Persistence/Migrations/.gitkeep
 
+# Local databases
+/data/
+
 # OS
 .DS_Store
 Thumbs.db

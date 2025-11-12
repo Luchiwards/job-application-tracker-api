@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import JobApplicationsTable from '@web/components/applications/JobApplicationsTable'
@@ -33,7 +33,6 @@ const StatusFilter = memo(() => {
   const listStatus = useAppSelector(selectJobApplicationsListStatus)
   const filters = useAppSelector(selectJobApplicationsFilters)
 
-  const uniqueStatuses = useMemo(() => jobApplicationStatuses, [])
   const statusFilterValue = filters.status ?? 'all'
   const isLoading = listStatus === 'loading'
 
@@ -57,7 +56,7 @@ const StatusFilter = memo(() => {
           disabled={isLoading}
         >
           <option value="all">All statuses</option>
-          {uniqueStatuses.map((status) => (
+          {jobApplicationStatuses.map((status) => (
             <option key={status} value={status}>
               {getJobApplicationStatusLabel(status)}
             </option>
@@ -155,7 +154,7 @@ const ApplicationsListPage = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    dispatch(fetchJobApplications(undefined))
+    dispatch(fetchJobApplications())
   }, [dispatch])
 
   useEffect(() => {
@@ -184,7 +183,7 @@ const ApplicationsListPage = () => {
       setSuccessMessage('Application deleted.')
       setDeleteRequested(null)
       dispatch(resetDeleteState())
-      dispatch(fetchJobApplications(undefined))
+      dispatch(fetchJobApplications())
       return
     }
 
@@ -256,43 +255,55 @@ const ApplicationsListPage = () => {
   const isMutationLoading = mutationStatus === 'loading'
   const isDeleteLoading = deleteStatus === 'loading'
 
+  const alerts: Array<{
+    key: string
+    variant: 'error' | 'success'
+    message: string
+    onClose: () => void
+  }> = []
+
+  if (mutationError) {
+    alerts.push({
+      key: 'mutationError',
+      variant: 'error',
+      message: mutationError,
+      onClose: () => {
+        dispatch(resetMutationState())
+      },
+    })
+  }
+
+  if (deleteError) {
+    alerts.push({
+      key: 'deleteError',
+      variant: 'error',
+      message: deleteError,
+      onClose: () => {
+        dispatch(resetDeleteState())
+      },
+    })
+  }
+
+  if (successMessage) {
+    alerts.push({
+      key: 'successMessage',
+      variant: 'success',
+      message: successMessage,
+      onClose: () => {
+        setSuccessMessage(null)
+      },
+    })
+  }
+
   return (
     <section className="applications">
       <ApplicationsHeader onAddNew={handleAddNew} />
 
-      {mutationError ? (
-        <Alert
-          variant="error"
-          dismissible
-          onClose={() => {
-            dispatch(resetMutationState())
-          }}
-        >
-          {mutationError}
+      {alerts.map(({ key, variant, message, onClose }) => (
+        <Alert key={key} variant={variant} dismissible onClose={onClose}>
+          {message}
         </Alert>
-      ) : null}
-      {deleteError ? (
-        <Alert
-          variant="error"
-          dismissible
-          onClose={() => {
-            dispatch(resetDeleteState())
-          }}
-        >
-          {deleteError}
-        </Alert>
-      ) : null}
-      {successMessage ? (
-        <Alert
-          variant="success"
-          dismissible
-          onClose={() => {
-            setSuccessMessage(null)
-          }}
-        >
-          {successMessage}
-        </Alert>
-      ) : null}
+      ))}
 
       <ApplicationsTableSection
         onEdit={handleEdit}
