@@ -10,6 +10,7 @@ type JobApplicationsTableProps = {
   onDelete?: (id: number) => void
   isLoading?: boolean
   statusDisabled?: boolean
+  deleteDisabled?: boolean
   emptyMessage?: string
 }
 
@@ -20,6 +21,7 @@ const JobApplicationsTable = ({
   onDelete,
   isLoading = false,
   statusDisabled = false,
+  deleteDisabled = false,
   emptyMessage = 'No job applications found.',
 }: JobApplicationsTableProps) => {
   if (isLoading) {
@@ -80,8 +82,24 @@ const JobApplicationsTable = ({
                     type="button"
                     className="applications-table__delete"
                     onClick={() => onDelete(application.id)}
+                    aria-label={`Delete ${application.companyName} application`}
+                    disabled={deleteDisabled}
                   >
-                    Delete
+                    <svg
+                      className="applications-table__delete-icon"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path
+                        d="M9 3V4H4.5C4.22386 4 4 4.22386 4 4.5V5.5C4 5.77614 4.22386 6 4.5 6H19.5C19.7761 6 20 5.77614 20 5.5V4.5C20 4.22386 19.7761 4 19.5 4H15V3C15 2.44772 14.5523 2 14 2H10C9.44772 2 9 2.44772 9 3ZM6 20C6 21.1046 6.89543 22 8 22H16C17.1046 22 18 21.1046 18 20V8H6V20Z"
+                        fill="currentColor"
+                      />
+                    </svg>
                   </button>
                 ) : null}
               </td>

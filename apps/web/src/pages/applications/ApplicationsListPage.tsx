@@ -7,9 +7,13 @@ import PaginationControls from '@web/components/shared/PaginationControls'
 import { useAppDispatch, useAppSelector } from '@web/store/hooks'
 import {
   changeJobApplicationStatus,
+  deleteJobApplication,
   fetchJobApplications,
   jobApplicationsSelectors,
+  resetDeleteState,
   resetMutationState,
+  selectJobApplicationsDeleteError,
+  selectJobApplicationsDeleteStatus,
   selectJobApplicationsError,
   selectJobApplicationsFilters,
   selectJobApplicationsListStatus,
@@ -36,8 +40,11 @@ const ApplicationsListPage = () => {
   const filters = useAppSelector(selectJobApplicationsFilters)
   const mutationStatus = useAppSelector(selectJobApplicationsMutationStatus)
   const mutationError = useAppSelector(selectJobApplicationsMutationError)
+  const deleteStatus = useAppSelector(selectJobApplicationsDeleteStatus)
+  const deleteError = useAppSelector(selectJobApplicationsDeleteError)
 
   const [statusUpdateRequested, setStatusUpdateRequested] = useState(false)
+  const [deleteRequested, setDeleteRequested] = useState<number | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -64,6 +71,21 @@ const ApplicationsListPage = () => {
       }
     }
   }, [dispatch, mutationStatus, statusUpdateRequested])
+
+  useEffect(() => {
+    if (deleteRequested !== null) {
+      if (deleteStatus === 'succeeded') {
+        setSuccessMessage('Application deleted.')
+        setDeleteRequested(null)
+        dispatch(resetDeleteState())
+        dispatch(fetchJobApplications(filters))
+      }
+
+      if (deleteStatus === 'failed') {
+        setDeleteRequested(null)
+      }
+    }
+  }, [deleteRequested, deleteStatus, dispatch, filters])
 
   useEffect(() => {
     if (location.state && typeof location.state === 'object' && 'message' in location.state) {
@@ -158,6 +180,17 @@ const ApplicationsListPage = () => {
           {mutationError}
         </Alert>
       ) : null}
+      {deleteError ? (
+        <Alert
+          variant="error"
+          dismissible
+          onClose={() => {
+            dispatch(resetDeleteState())
+          }}
+        >
+          {deleteError}
+        </Alert>
+      ) : null}
       {successMessage ? (
         <Alert
           variant="success"
@@ -174,8 +207,13 @@ const ApplicationsListPage = () => {
         applications={applications}
         onEdit={(id) => navigate(`/applications/${id}/edit`)}
         onStatusChange={handleStatusChange}
+        onDelete={(id) => {
+          setDeleteRequested(id)
+          dispatch(deleteJobApplication(id))
+        }}
         isLoading={isLoading}
         statusDisabled={isMutationLoading}
+        deleteDisabled={deleteStatus === 'loading'}
       />
 
       <PaginationControls

@@ -8,49 +8,11 @@
   gap: 2rem;
 }
 
-.layout__header {
-  display: grid;
-  gap: 0.75rem;
-}
-
 .layout__brand {
   font-size: clamp(1.75rem, 4vw, 2.25rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--brand-color);
-}
-
-.layout__subtitle {
-  margin: 0;
-  max-width: 48ch;
-  color: var(--text-muted);
-}
-
-.layout__nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.layout__nav-link {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.4rem 0.85rem;
-  border-radius: 999px;
-  background-color: rgba(79, 70, 229, 0.08);
-  color: var(--brand-color);
-  font-weight: 600;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-
-.layout__nav-link:hover {
-  background-color: rgba(79, 70, 229, 0.14);
-  transform: translateY(-1px);
-}
-
-.layout__nav-link.active {
-  background-color: var(--brand-color);
-  color: #ffffff;
 }
 
 .layout__content {
@@ -182,6 +144,15 @@
 
 .applications-table__delete:hover {
   background-color: rgba(220, 53, 69, 0.18);
+}
+
+.applications-table__delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.applications-table__delete-icon {
+  display: block;
 }
 
 .applications-table__placeholder,
