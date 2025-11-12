@@ -5,8 +5,16 @@ using Serilog;
 
 namespace JobApplicationTracker.Infrastructure.Logging;
 
+/// <summary>
+/// Provides Serilog configuration helpers.
+/// </summary>
 public static class SerilogExtensions
 {
+    /// <summary>
+    /// Configures Serilog for the host using application configuration and dependency injection.
+    /// </summary>
+    /// <param name="hostBuilder">The host builder to configure.</param>
+    /// <returns>The same host builder instance for chaining.</returns>
     public static IHostBuilder UseSerilogLogging(this IHostBuilder hostBuilder)
     {
         return hostBuilder.UseSerilog((context, services, loggerConfiguration) =>

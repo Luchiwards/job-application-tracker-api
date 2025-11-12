@@ -37,5 +37,7 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 app.Run();
-
+/// <summary>
+/// Provides access to the application's entry point for integration testing scenarios.
+/// </summary>
 public partial class Program;

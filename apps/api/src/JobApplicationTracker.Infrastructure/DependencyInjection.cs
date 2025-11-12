@@ -12,8 +12,17 @@ using Microsoft.Extensions.Options;
 
 namespace JobApplicationTracker.Infrastructure;
 
+/// <summary>
+/// Provides extension methods for registering infrastructure-layer services.
+/// </summary>
 public static class InfrastructureServiceRegistration
 {
+    /// <summary>
+    /// Registers infrastructure services including the database context, repositories, and health checks.
+    /// </summary>
+    /// <param name="services">The service collection being configured.</param>
+    /// <param name="configuration">Configuration used to resolve database settings.</param>
+    /// <returns>The configured service collection.</returns>
     public static IServiceCollection AddInfrastructureServices(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -52,6 +61,12 @@ public static class InfrastructureServiceRegistration
         return services;
     }
 
+    /// <summary>
+    /// Applies any pending EF Core migrations at application startup.
+    /// </summary>
+    /// <param name="services">Service provider used to create a scoped <see cref="ApplicationDbContext"/>.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous initialization.</returns>
     public static async Task InitialiseDatabaseAsync(this IServiceProvider services, CancellationToken cancellationToken = default)
     {
         using var scope = services.CreateScope();

@@ -11,15 +11,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JobApplicationTracker.Infrastructure.Features.JobApplications;
 
+/// <summary>
+/// EF Core-backed implementation of <see cref="IJobApplicationRepository"/>.
+/// </summary>
 public sealed class JobApplicationRepository : IJobApplicationRepository
 {
     private readonly ApplicationDbContext _dbContext;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JobApplicationRepository"/> class.
+    /// </summary>
+    /// <param name="dbContext">Database context used for persistence operations.</param>
     public JobApplicationRepository(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
+    /// <inheritdoc />
     public async Task<JobApplication?> GetByIdAsync(
         int id,
         bool asTracking = false,
@@ -35,6 +43,7 @@ public sealed class JobApplicationRepository : IJobApplicationRepository
         return await query.FirstOrDefaultAsync(application => application.Id == id, cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task<(IReadOnlyList<JobApplication> Items, int TotalCount)> SearchAsync(
         JobApplicationQueryParameters parameters,
         CancellationToken cancellationToken = default)
@@ -80,18 +89,21 @@ public sealed class JobApplicationRepository : IJobApplicationRepository
         return (items, totalCount);
     }
 
+    /// <inheritdoc />
     public async Task AddAsync(JobApplication application, CancellationToken cancellationToken = default)
     {
         await _dbContext.JobApplications.AddAsync(application, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task UpdateAsync(JobApplication application, CancellationToken cancellationToken = default)
     {
         _dbContext.JobApplications.Update(application);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(JobApplication application, CancellationToken cancellationToken = default)
     {
         _dbContext.JobApplications.Remove(application);

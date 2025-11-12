@@ -5,8 +5,21 @@ using JobApplicationTracker.Domain.Enums;
 
 namespace JobApplicationTracker.Application.Features.JobApplications.Validation;
 
+/// <summary>
+/// Provides shared validation rules for job application commands.
+/// </summary>
 public static class JobApplicationCommandValidationExtensions
 {
+    /// <summary>
+    /// Applies common validation rules for job application commands to the supplied validator.
+    /// </summary>
+    /// <typeparam name="TCommand">Type of the command being validated.</typeparam>
+    /// <param name="validator">Validator that receives the rules.</param>
+    /// <param name="companyName">Expression selecting the company name property.</param>
+    /// <param name="position">Expression selecting the position property.</param>
+    /// <param name="status">Expression selecting the status property.</param>
+    /// <param name="dateApplied">Expression selecting the date applied property.</param>
+    /// <param name="notes">Expression selecting the notes property.</param>
     public static void ApplyJobApplicationCommandRules<TCommand>(
         this AbstractValidator<TCommand> validator,
         Expression<Func<TCommand, string>> companyName,

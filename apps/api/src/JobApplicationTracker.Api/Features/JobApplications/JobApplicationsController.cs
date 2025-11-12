@@ -11,17 +11,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JobApplicationTracker.Api.Features.JobApplications;
 
+/// <summary>
+/// Provides endpoints for managing job applications including listing, creating, updating, and deleting entries.
+/// </summary>
 [ApiController]
 [Route("api/v{version:apiVersion}/job-applications")]
 [ApiVersion("1.0")]
 [Produces("application/json")]
-/// <summary>
-/// Provides endpoints for managing job applications including listing, creating, updating, and deleting entries.
-/// </summary>
 public sealed class JobApplicationsController : ControllerBase
 {
     private readonly IMediator _mediator;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JobApplicationsController"/> class.
+    /// </summary>
+    /// <param name="mediator">Mediator used to dispatch job application commands and queries.</param>
     public JobApplicationsController(IMediator mediator)
     {
         _mediator = mediator;

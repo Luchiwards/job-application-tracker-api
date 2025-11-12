@@ -2,8 +2,14 @@ using FluentValidation;
 
 namespace JobApplicationTracker.Application.Features.JobApplications.Queries.GetAll;
 
+/// <summary>
+/// Validates <see cref="GetJobApplicationsQuery"/> instances.
+/// </summary>
 public sealed class GetJobApplicationsQueryValidator : AbstractValidator<GetJobApplicationsQuery>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetJobApplicationsQueryValidator"/> class.
+    /// </summary>
     public GetJobApplicationsQueryValidator()
     {
         RuleFor(x => x.Page)

@@ -7,8 +7,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace JobApplicationTracker.Infrastructure.Persistence.Configurations;
 
+/// <summary>
+/// Configures the <see cref="JobApplication"/> entity model.
+/// </summary>
 public sealed class JobApplicationConfiguration : IEntityTypeConfiguration<JobApplication>
 {
+    /// <summary>
+    /// Configures the entity type builder for <see cref="JobApplication"/>.
+    /// </summary>
+    /// <param name="builder">Builder used to configure the entity model.</param>
     public void Configure(EntityTypeBuilder<JobApplication> builder)
     {
         builder.ToTable("JobApplications");

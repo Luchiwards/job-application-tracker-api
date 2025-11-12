@@ -11,6 +11,9 @@ using Microsoft.Extensions.Logging;
 
 namespace JobApplicationTracker.Api.Common.Middleware;
 
+/// <summary>
+/// Centralized middleware that converts known exceptions into RFC 7807-compliant responses and logs failures.
+/// </summary>
 public sealed class ExceptionHandlingMiddleware : IMiddleware
 {
     private static readonly Action<ILogger, string, Exception?> ValidationFailureMessage =
@@ -34,6 +37,11 @@ public sealed class ExceptionHandlingMiddleware : IMiddleware
     private readonly IProblemDetailsService _problemDetailsService;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExceptionHandlingMiddleware"/> class.
+    /// </summary>
+    /// <param name="problemDetailsService">Service used to emit standardized problem details responses.</param>
+    /// <param name="logger">Logger used to record exception details.</param>
     public ExceptionHandlingMiddleware(
         IProblemDetailsService problemDetailsService,
         ILogger<ExceptionHandlingMiddleware> logger)
@@ -42,6 +50,12 @@ public sealed class ExceptionHandlingMiddleware : IMiddleware
         _logger = logger;
     }
 
+    /// <summary>
+    /// Executes the middleware pipeline, translating known exceptions into appropriate HTTP responses.
+    /// </summary>
+    /// <param name="context">The current HTTP context.</param>
+    /// <param name="next">The next middleware in the pipeline.</param>
+    /// <returns>A task that completes when the downstream middleware finishes processing.</returns>
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try

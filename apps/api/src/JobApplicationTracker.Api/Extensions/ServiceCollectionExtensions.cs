@@ -17,10 +17,18 @@ using Microsoft.OpenApi.Any;
 
 namespace JobApplicationTracker.Api.Extensions;
 
+/// <summary>
+/// Provides extension methods for configuring the API presentation layer, including controllers, versioning, and documentation.
+/// </summary>
 public static class PresentationServiceRegistration
 {
     private const string CorsPolicyName = "Frontend";
 
+    /// <summary>
+    /// Registers presentation-layer services such as controllers, middleware, CORS, API versioning, and Swagger support.
+    /// </summary>
+    /// <param name="services">The service collection being configured.</param>
+    /// <returns>The same service collection to enable fluent configuration.</returns>
     public static IServiceCollection AddPresentationServices(this IServiceCollection services)
     {
         services.AddControllers()
@@ -106,19 +114,23 @@ public static class PresentationServiceRegistration
         return services;
     }
 
+    /// <summary>
+    /// Gets the name of the canonical CORS policy used by the API.
+    /// </summary>
+    /// <returns>The configured CORS policy name.</returns>
     public static string GetCorsPolicyName() => CorsPolicyName;
 
     private static OpenApiSchema CreateApplicationStatusSchema()
     {
         var description = new StringBuilder()
             .AppendLine("Lifecycle status of a job application. Allowed values:")
-            .AppendLine($"- {ApplicationStatus.Applied}: Initial submission received.")
-            .AppendLine($"- {ApplicationStatus.Shortlisted}: Selected for further consideration.")
-            .AppendLine($"- {ApplicationStatus.Interview}: Interview scheduled or in progress.")
-            .AppendLine($"- {ApplicationStatus.InProcess}: Awaiting a decision after interviews.")
-            .AppendLine($"- {ApplicationStatus.Offer}: Offer extended by the company.")
-            .AppendLine($"- {ApplicationStatus.Declined}: Candidate declined or was rejected.")
-            .AppendLine($"- {ApplicationStatus.PositionClosed}: Hiring process closed without offer.")
+            .AppendLine(FormattableString.Invariant($"- {ApplicationStatus.Applied}: Initial submission received."))
+            .AppendLine(FormattableString.Invariant($"- {ApplicationStatus.Shortlisted}: Selected for further consideration."))
+            .AppendLine(FormattableString.Invariant($"- {ApplicationStatus.Interview}: Interview scheduled or in progress."))
+            .AppendLine(FormattableString.Invariant($"- {ApplicationStatus.InProcess}: Awaiting a decision after interviews."))
+            .AppendLine(FormattableString.Invariant($"- {ApplicationStatus.Offer}: Offer extended by the company."))
+            .AppendLine(FormattableString.Invariant($"- {ApplicationStatus.Declined}: Candidate declined or was rejected."))
+            .AppendLine(FormattableString.Invariant($"- {ApplicationStatus.PositionClosed}: Hiring process closed without offer."))
             .ToString().TrimEnd();
 
         return new OpenApiSchema

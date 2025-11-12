@@ -4,10 +4,14 @@ using System.Text.Json.Serialization;
 
 namespace JobApplicationTracker.Api.Common.Json;
 
+/// <summary>
+/// Converts <see cref="DateOnly"/> values to and from their ISO-8601 string representation for JSON payloads.
+/// </summary>
 public sealed class DateOnlyJsonConverter : JsonConverter<DateOnly>
 {
     private const string Format = "yyyy-MM-dd";
 
+    /// <inheritdoc />
     public override DateOnly Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
@@ -22,6 +26,7 @@ public sealed class DateOnlyJsonConverter : JsonConverter<DateOnly>
         return date;
     }
 
+    /// <inheritdoc />
     public override void Write(
         Utf8JsonWriter writer,
         DateOnly value,
